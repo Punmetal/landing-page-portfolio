@@ -75,15 +75,31 @@ the stand-in (the stand-in script never overwrites a file it did not create).
 
 ### Adding media to a project
 
-Add an entry to the project's `media` array in `src/data/projects.ts`:
+1. Describe it in the project's `media` array in `src/data/projects.ts` (alt text, labels):
 
 ```ts
 { kind: 'image', name: '01-k2o-kv', alt: 'Describe what is in the image' },
-{ kind: 'image', name: '07-sybil-tiers', alt: '...', span: 'full' },   // full-width row
 { kind: 'video', name: '01-k2o-teaser', label: 'K2O teaser', poster: '01-k2o-kv' },
 { kind: 'model', name: '01-k2o-logo', label: 'K2O logo, 3D', poster: '01-k2o-logo-water' },
-{ kind: 'embed', provider: 'youtube', id: 'VIDEO_ID', label: 'Case study film', poster: '01-k2o-kv' },
 ```
+
+2. Place images on a desktop slide in `src/data/layouts.ts`. Boxes are `[x0, y0, x1, y1]` in
+   PDF page pixels (1280x720), so you can read them straight off the Figma frame (at 1x):
+
+```ts
+k2o: [
+  { frame: '4a', items: [{ name: '01-k2o-kv', box: [325, 45, 668, 472] }, /* ... */] }, // page 1
+  { frame: '4b', items: [{ label: 'Merchandise', box: [54, 40, 783, 92] }, /* ... */] }, // page 2
+],
+```
+
+   Page 1 of a project is the intro page (text column + media at x 310–1250); later pages use
+   the whole page. Videos and 3D models get a generated "Motion & 3D" page. The build fails if
+   an image in `media` is not placed on any page. On screens below 1200px the slides stack:
+   items flow in the order they are listed, so list each heading before its images.
+
+3. Export the image at 2x so it fills its box (box width × 2 px). Its aspect ratio should match
+   the box; otherwise it is cropped to fill (`object-fit: cover`).
 
 Missing files render as a clearly labelled "coming soon" placeholder, never a fake.
 

@@ -1,11 +1,12 @@
 // Project content, verbatim from the Drive portfolio frames (port-beta-6).
 // Media names follow the asset convention NN-slug-asset (see README).
+// Where each image sits on the desktop slides lives in ./layouts.ts.
 // `client` is used for the [CHECK RIGHTS] list in HANDOFF.md, not rendered.
 import type { ToolId } from './site';
 
 export type Media =
-  | { kind: 'image'; name: string; alt: string; span?: 'full' }
-  | { kind: 'video'; name: string; label: string; poster?: string; span?: 'full' }
+  | { kind: 'image'; name: string; alt: string }
+  | { kind: 'video'; name: string; label: string; poster?: string }
   | { kind: 'model'; name: string; label: string; poster?: string }
   | { kind: 'embed'; provider: 'youtube' | 'vimeo' | 'sketchfab'; id: string; label: string; poster?: string };
 
@@ -62,6 +63,7 @@ export const projects: Project[] = [
       { kind: 'image', name: '01-k2o-merch-tee', alt: 'Light blue K2O festival T-shirt, front "Water!" print and back artist line-up' },
       { kind: 'image', name: '01-k2o-merch-tiedye', alt: 'Tie-dye S2O "Wet Me!" T-shirt' },
       { kind: 'image', name: '01-k2o-merch-black', alt: 'Black S2O "Free Water" T-shirts, front and back' },
+      { kind: 'image', name: '01-k2o-merch-wristband', alt: 'Single K2O fabric festival wristband' },
       { kind: 'image', name: '01-k2o-merch-wristbands', alt: 'Festival wristbands for Owner\'s Box, Artist, Sponsor, Vendor, Re-entry and Influencer' },
       { kind: 'image', name: '01-k2o-map', alt: 'K2O festival map showing main stage, wet zone, entrance and facilities' },
       { kind: 'video', name: '01-k2o-teaser', label: 'K2O teaser video', poster: '01-k2o-kv' },
@@ -200,7 +202,7 @@ export const projects: Project[] = [
       { kind: 'image', name: '06-16p-spread-blue', alt: 'Blue book spread with a winter scene' },
       { kind: 'image', name: '06-16p-spread-yellow', alt: 'Yellow book spread: an adventurer character in a desert' },
       { kind: 'image', name: '06-16p-characters', alt: 'Line-up of 16 original characters, one per MBTI type' },
-      { kind: 'image', name: '06-16p-all-spreads', alt: 'All sixteen book spreads, grouped by color family', span: 'full' },
+      { kind: 'image', name: '06-16p-all-spreads', alt: 'All sixteen book spreads, grouped by color family' },
       { kind: 'video', name: '06-16p-flip', label: 'Book flip-through', poster: '06-16p-cover' },
     ],
   },
@@ -221,8 +223,8 @@ export const projects: Project[] = [
     media: [
       { kind: 'image', name: '07-sybil-logo', alt: 'Sybil Husky logo: a minimal husky head mark above the wordmark' },
       { kind: 'image', name: '07-sybil-environment', alt: 'Illustrated snowy mountain landscape with a castle under the northern lights' },
-      { kind: 'image', name: '07-sybil-tiers', alt: 'Six husky character cards: Apprentice, Mage, Sorcerer, Supreme, Special, Super Special', span: 'full' },
-      { kind: 'image', name: '07-sybil-landing', alt: 'Sybil Husky landing page UI shown on laptops and as a section overview', span: 'full' },
+      { kind: 'image', name: '07-sybil-tiers', alt: 'Six husky character cards: Apprentice, Mage, Sorcerer, Supreme, Special, Super Special' },
+      { kind: 'image', name: '07-sybil-landing', alt: 'Sybil Husky landing page UI shown on laptops and as a section overview' },
       { kind: 'model', name: '07-sybil-card', label: 'Character card, 3D', poster: '07-sybil-tiers' },
       { kind: 'video', name: '07-sybil-prototype', label: 'Landing page prototype walkthrough', poster: '07-sybil-landing' },
     ],

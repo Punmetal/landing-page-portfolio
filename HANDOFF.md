@@ -65,6 +65,13 @@ Vercel preview once the real 2x exports are in (heavier images will cost some Pe
   use **BBH Bartle** (self-hosted, latin, ~8KB). It is very wide, so each heading is sized from its
   container with `--fit` (longest word width in em) and capped at the old size
 
+- **Project showcase = 16:9 slides on desktop (≥1200px)**, traced from the PDF pages. Box
+  coordinates live in `src/data/layouts.ts` (1280×720 page pixels) and also drive the stand-in
+  crops. Pages: 01 K2O 2 + Motion & 3D, 02 1 + Motion, 03–05 1 each, 06 2 + Motion, 07 2 + Motion & 3D.
+  Each slide fits the viewport; if text ever runs long the slide grows rather than clipping.
+  Below 1200px the same markup stacks (text, then images in 2 columns). Real exports: export each
+  image at 2× its box size with the same aspect ratio (see README › Adding media)
+
 ## Open questions
 - [ ] Sybil Husky: who is the client / project owner? Notion says "real work" but no name.
 - [ ] OK to show the contact line "Open to Visual, Graphic, Digital and UI / Web design roles."?

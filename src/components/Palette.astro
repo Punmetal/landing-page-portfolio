@@ -3,8 +3,12 @@ import type { Swatch } from '../data/projects';
 
 interface Props {
   swatches: Swatch[];
+  /** 'strip': row of chips (mobile). 'fill': fills its slide box like the PDF. */
+  variant?: 'strip' | 'fill';
+  /** fill only: tall narrow box, so swatch names run vertically */
+  vertical?: boolean;
 }
-const { swatches } = Astro.props;
+const { swatches, variant = 'strip', vertical = false } = Astro.props;
 
 // Pick legible label color per swatch (WCAG relative luminance).
 const lum = (hex: string) => {
@@ -15,9 +19,11 @@ const lum = (hex: string) => {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 };
 const ink = (hex: string) => (lum(hex) > 0.18 ? '#000' : '#fff');
+// 6 swatches: two hero colors on top, four below (as on the K2O page)
+const featured = swatches.length === 6;
 ---
 
-<ul class="palette" role="list" aria-label="Color palette">
+<ul class:list={['palette', variant, { vertical, featured }]} role="list" aria-label="Color palette">
   {
     swatches.map((s) => (
       <li style={`background:${s.hex};color:${ink(s.hex)}`}>
@@ -53,5 +59,45 @@ const ink = (hex: string) => (lum(hex) > 0.18 ? '#000' : '#fff');
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+  }
+
+  /* ---- fill: sized by its slide box, type scales with the slide.
+     Slides only exist from 1200px; below that it falls back to the strip. ---- */
+  @media (min-width: 1200px) {
+    .fill {
+      width: 100%;
+      height: 100%;
+      grid-template-columns: repeat(var(--n, 4), 1fr);
+      border-radius: 0.8cqw;
+    }
+    .fill.featured {
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: 3fr 2fr;
+    }
+    .fill.featured li {
+      grid-column: span 3;
+    }
+    .fill.featured li:nth-child(-n + 2) {
+      grid-column: span 6;
+    }
+    .fill li {
+      min-height: 0;
+      gap: 0;
+      padding: 0.8cqw 0.85cqw;
+      font-size: 0.62cqw;
+    }
+    .fill .name {
+      align-self: flex-end;
+      text-align: right;
+    }
+    .fill.vertical li {
+      align-items: center;
+    }
+    .fill.vertical .name {
+      align-self: center;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      letter-spacing: 0.12em;
+    }
   }
 </style>
