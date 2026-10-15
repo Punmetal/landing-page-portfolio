@@ -24,8 +24,7 @@ export interface Project {
   role: string[];
   tools: ToolId[];
   palette?: Swatch[];
-  cover: string; // media name used on the index (book cover)
-  // Bookshelf spine: short label + colors sampled from the project's own work
+  // Bookshelf book: short spine label + book color (bright, to stand off the dark page)
   spine: { label: string; bg: string; ink: string };
   media: Media[];
 }
@@ -34,7 +33,7 @@ export const projects: Project[] = [
   {
     no: '01',
     slug: 'k2o',
-    spine: { label: 'K2O Songkran', bg: '#051026', ink: '#FF2A3F' },
+    spine: { label: 'K2O Songkran', bg: '#FF2A44', ink: '#111111' },
     title: 'K2O Songkran Music Festival',
     client: 'S2O Festival',
     description:
@@ -49,7 +48,6 @@ export const projects: Project[] = [
       { hex: '#C0C0C0', name: 'Silver Grey' },
       { hex: '#FFFFFF', name: 'White' },
     ],
-    cover: '01-k2o-kv',
     media: [
       { kind: 'image', name: '01-k2o-kv', alt: 'K2O key visual: a glowing red neon K2O logo submerged underwater above a Bangkok skyline, dated 14 April 2026, S2O Land' },
       { kind: 'image', name: '01-k2o-poster-bus', alt: 'K2O artist poster for BUS in the underwater festival style' },
@@ -72,7 +70,7 @@ export const projects: Project[] = [
   {
     no: '02',
     slug: 'startup-standup',
-    spine: { label: 'Startup Standup', bg: '#003C58', ink: '#FCD700' },
+    spine: { label: 'Startup Standup', bg: '#00C2CF', ink: '#111111' },
     title: 'Startup Standup Comedy',
     client: 'Enter to Start',
     description:
@@ -89,7 +87,6 @@ export const projects: Project[] = [
       { hex: '#FCD700', name: 'Vivid Yellow' },
       { hex: '#FFFFFF', name: 'White' },
     ],
-    cover: '02-standup-kv',
     media: [
       { kind: 'image', name: '02-standup-kv', alt: 'Startup Standup Comedy key visual: a smiling comedian with a microphone over bold yellow and white type, 18 Aug 2023' },
       { kind: 'image', name: '02-standup-banners', alt: 'Two roll-up banners using the Startup Standup Comedy key visual' },
@@ -103,14 +100,13 @@ export const projects: Project[] = [
   {
     no: '03',
     slug: 'thumbnails-posters',
-    spine: { label: 'Thumbnails & Posters', bg: '#141414', ink: '#FF2A2A' },
+    spine: { label: 'Thumbnails & Posters', bg: '#9D6BFF', ink: '#111111' },
     title: 'Thumbnails & Posters',
     client: 'MollageBKK / Netflix Thailand',
     description:
       'A collection of digital thumbnails and promotional visuals created in collaboration with MollageBKK, including entertainment content for Netflix Thailand. Each design combines photo compositing, retouching, and typography to create engaging, attention-grabbing visuals tailored to different content formats.',
     role: ['Visual Concept & Composition', 'Photo Compositing & Retouching', 'Typography & Final Artwork'],
     tools: ['ps', 'ai'],
-    cover: '03-thumbs-poster-ice',
     media: [
       { kind: 'image', name: '03-thumbs-poster-ice', alt: 'Thai word-game poster: a cast of eight posing among ice cubes, with bold Thai headline type' },
       { kind: 'image', name: '03-thumbs-poster-jail', alt: 'Poster of a group of men behind prison bars, Thai headline about guessing job jargon in one minute' },
@@ -126,7 +122,7 @@ export const projects: Project[] = [
   {
     no: '04',
     slug: 'visual-content',
-    spine: { label: 'Visual Content', bg: '#3A1C71', ink: '#FFD23F' },
+    spine: { label: 'Visual Content', bg: '#1EA7FF', ink: '#111111' },
     title: 'Visual Content Design',
     client: 'Enter to Start (includes one Binance TH post)',
     description:
@@ -138,7 +134,6 @@ export const projects: Project[] = [
       'Prepared final artwork for social media publishing.',
     ],
     tools: ['ps', 'ai'],
-    cover: '04-content-post-luck',
     media: [
       { kind: 'image', name: '04-content-post-tree-of-alpha', alt: 'Instagram post: newspaper collage about the trader Tree of Alpha' },
       { kind: 'image', name: '04-content-post-luck', alt: 'Instagram post: orange dice on green, "The Mechanism of Luck"' },
@@ -156,7 +151,7 @@ export const projects: Project[] = [
   {
     no: '05',
     slug: 'infographic',
-    spine: { label: 'Infographic', bg: '#141B2D', ink: '#F5C400' },
+    spine: { label: 'Infographic', bg: '#2BD46B', ink: '#111111' },
     title: 'Infographic',
     client: 'Enter to Start',
     description:
@@ -168,7 +163,6 @@ export const projects: Project[] = [
       'Prepared final artwork for digital publishing.',
     ],
     tools: ['ps', 'ai'],
-    cover: '05-info-bitcoin-timeline',
     media: [
       { kind: 'image', name: '05-info-bitcoin-timeline', alt: 'Long infographic: timeline of Bitcoin price events from 2020 to 2023' },
       { kind: 'image', name: '05-info-documentaries', alt: 'Infographic: five crypto documentaries worth watching' },
@@ -181,7 +175,7 @@ export const projects: Project[] = [
   {
     no: '06',
     slug: '16-personalities',
-    spine: { label: '16 Personalities', bg: '#F7C64B', ink: '#2B1F3A' },
+    spine: { label: '16 Personalities', bg: '#FFD21F', ink: '#111111' },
     title: '16 Personalities Book Design',
     indexTitle: '16 Personalities',
     description:
@@ -199,7 +193,6 @@ export const projects: Project[] = [
       { hex: '#52BBCC', name: 'Lagoon Blue' },
       { hex: '#F7C64B', name: 'Sunshine Yellow' },
     ],
-    cover: '06-16p-cover',
     media: [
       { kind: 'image', name: '06-16p-cover', alt: 'Stack of 16 Personalities books with a colorful rounded type cover' },
       { kind: 'image', name: '06-16p-spread-green', alt: 'Green book spread: a wizard character for the INFJ type' },
@@ -214,7 +207,7 @@ export const projects: Project[] = [
   {
     no: '07',
     slug: 'sybil-husky',
-    spine: { label: 'Sybil Husky', bg: '#1A56C8', ink: '#FFFFFF' },
+    spine: { label: 'Sybil Husky', bg: '#FF5FB0', ink: '#111111' },
     title: 'Sybil Husky',
     client: '[TODO] confirm client / project owner',
     description: [
@@ -225,7 +218,6 @@ export const projects: Project[] = [
     ],
     role: ['Visual Identity', 'Character Design', 'Illustration', 'Landing Page UI', 'NFT Card Design', 'Art Direction'],
     tools: ['ps', 'ai', 'lr', 'figma', 'procreate'],
-    cover: '07-sybil-landing',
     media: [
       { kind: 'image', name: '07-sybil-logo', alt: 'Sybil Husky logo: a minimal husky head mark above the wordmark' },
       { kind: 'image', name: '07-sybil-environment', alt: 'Illustrated snowy mountain landscape with a castle under the northern lights' },
