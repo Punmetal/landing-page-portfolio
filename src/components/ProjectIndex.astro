@@ -116,6 +116,18 @@ const fit = (t: string) => Math.max(...t.split(/\s+/).map((w) => w.length), 6) *
     --open-w: calc(var(--spine-w) * 0.41 + var(--cover-w) * 0.89 + var(--open-m) * 2);
     --turn: 0.77s cubic-bezier(0.45, 0.05, 0.25, 1);
     --lift: 0.35s cubic-bezier(0.3, 0.7, 0.2, 1);
+    --foil-grad: linear-gradient(
+        110deg,
+        #2a2e37 0%,
+        #eef1f6 14%,
+        #ff8fcf 26%,
+        #2d313b 38%,
+        #8fe3ff 50%,
+        #fff3a6 62%,
+        #30343e 74%,
+        #f4f6fa 88%,
+        #2a2e37 100%
+      );
     padding-block: var(--section-y);
   }
   .head {
@@ -263,6 +275,31 @@ const fit = (t: string) => Math.max(...t.split(/\s+/).map((w) => w.length), 6) *
   .spine > * {
     position: relative;
   }
+  .spine-no,
+  .spine-title {
+    background: var(--foil-grad);
+    background-size: 100% 300%;
+    background-position: 50% var(--foil, 0%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    /* debossed like the cover title */
+    filter: drop-shadow(0 1px 0 rgb(255 255 255 / 0.45)) drop-shadow(0 -1px 0 rgb(0 0 0 / 0.35));
+    animation: foil-v 6s ease-in-out infinite alternate;
+  }
+  /* vertical text: the foil sweeps along the spine */
+  .spine-title {
+    background-size: 100% 250%;
+  }
+  @keyframes foil-v {
+    to {
+      background-position: 50% 100%;
+    }
+  }
+  .book-link:hover .spine-no,
+  .book-link:hover .spine-title {
+    animation-play-state: paused;
+  }
   .spine-no {
     font-family: var(--f-display);
     font-size: 1.3rem;
@@ -361,18 +398,7 @@ const fit = (t: string) => Math.max(...t.split(/\s+/).map((w) => w.length), 6) *
     text-wrap: balance;
     overflow-wrap: break-word;
     /* holographic chrome foil: dark and light bands so it reads on any cloth */
-    background: linear-gradient(
-      110deg,
-      #2a2e37 0%,
-      #eef1f6 14%,
-      #ff8fcf 26%,
-      #2d313b 38%,
-      #8fe3ff 50%,
-      #fff3a6 62%,
-      #30343e 74%,
-      #f4f6fa 88%,
-      #2a2e37 100%
-    );
+    background: var(--foil-grad);
     background-size: 250% 100%;
     background-position: var(--foil, 0%) 50%;
     -webkit-background-clip: text;
@@ -495,6 +521,10 @@ const fit = (t: string) => Math.max(...t.split(/\s+/).map((w) => w.length), 6) *
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .spine-no,
+    .spine-title {
+      animation: none;
+    }
     .book,
     .book::after,
     .book-link,
