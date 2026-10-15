@@ -29,7 +29,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
 {
   ready ? (
-    <div class="fmap" data-fmap data-steps={steps} style={`--ar:${data.width} / ${data.height}; --ar-n:${+(data.width / data.height).toFixed(4)}; --icons:${data.iconCount}; --icon-sheet:url(/media/${name}-icons.webp)`}>
+    <div class="fmap" data-fmap data-steps={steps} style={`--ar:${data.width} / ${data.height}; --ar-n:${+(data.width / data.height).toFixed(4)}; --icons:${data.iconCount}`}>
       <div class="fm-stage" data-stage>
         <div class="fm-view" data-view role="img" aria-label={label}>
           {mapLayers.map((l, i) => (
@@ -120,7 +120,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
             {data.categories.map((c) => (
               <li>
                 <button type="button" class="fm-key" data-key={c.id} data-kind={c.kind} aria-pressed="false">
-                  <span class="fm-ico" style={`--i:${c.icon}`} aria-hidden="true" />
+                  <span class="fm-ico" style={`--i:${c.icon};background-image:url(/media/${name}-icons.webp)`} aria-hidden="true" />
                   <span class="fm-name">{c.label}</span>
                   {c.count != null && <span class="fm-count">{c.count}</span>}
                 </button>
@@ -679,7 +679,10 @@ const pad = (n: number) => String(n).padStart(2, '0');
     flex: none;
     width: 24px;
     height: 30px;
-    background: var(--icon-sheet) calc(var(--i) * -24px) 0 / calc(var(--icons) * 24px) 30px no-repeat;
+    /* sprite url is set inline (resolves against the page, not this stylesheet) */
+    background-position: calc(var(--i) * -24px) 0;
+    background-size: calc(var(--icons) * 24px) 30px;
+    background-repeat: no-repeat;
   }
   .fm-name {
     flex: 1;
