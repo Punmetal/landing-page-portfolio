@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.astro/
+.vercel/
+.env
+.env.*
+.DS_Store
+Thumbs.db
+*.log
+
+# Large originals (Figma exports, video masters, GLB/blend sources, PSD) live here, never in git
+assets-src/
+
+# Local preview screenshots
+previews/

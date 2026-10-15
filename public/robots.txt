@@ -1,0 +1,3 @@
+# Private preview. Switch to "Allow: /" when Pun approves public launch.
+User-agent: *
+Disallow: /

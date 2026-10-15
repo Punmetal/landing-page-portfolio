@@ -1,0 +1,168 @@
+---
+import { profile } from '../data/site';
+---
+
+<header class="hero">
+  <nav class="hero-nav container" aria-label="Primary">
+    <a class="brand" href="#top" aria-label="Pun, back to top">PUN</a>
+    <ul role="list">
+      <li><a href="#work">Work</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="hero-body container" id="top">
+    <p class="wordmark display" aria-hidden="true">
+      <span>Port</span><span>folio</span>
+    </p>
+
+    <div class="hero-intro">
+      <h1 class="hero-name">
+        Tutphong <span class="nick">“{profile.nickname}”</span> Mungkalakul
+      </h1>
+      <p class="hero-role">{profile.role}, {profile.direction}</p>
+      <div class="hero-cta">
+        <a class="btn btn-dark" href="#work">See the work</a>
+        <a class="btn btn-light" href="#contact">Get in touch</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
+    background: var(--c-hero) image-set(url('/media/hero-swirl-1600.webp') 1x, url('/media/hero-swirl-2400.webp') 2x) center / cover;
+    color: var(--c-ink);
+    overflow: hidden;
+  }
+  /* grain over the red */
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('/media/grain.png');
+    opacity: 0.9;
+    pointer-events: none;
+  }
+  .hero > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 20px;
+  }
+  .brand {
+    font-family: var(--f-display);
+    font-size: 1.5rem;
+    color: var(--c-ink-display);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+  .hero-nav ul {
+    display: flex;
+    gap: clamp(12px, 3vw, 32px);
+    margin: 0;
+  }
+  .hero-nav a:not(.brand) {
+    display: inline-block;
+    padding-block: 10px;
+    font-weight: 700;
+    text-decoration: none;
+    text-underline-offset: 4px;
+  }
+  .hero-nav a:not(.brand):hover {
+    text-decoration: underline;
+  }
+
+  .hero-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(28px, 5vw, 56px);
+    padding-block: clamp(24px, 6vh, 72px) clamp(40px, 8vh, 96px);
+  }
+
+  .wordmark {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--c-ink-display);
+    /* "FOLIO" spans the container width */
+    font-size: clamp(4.25rem, 22vw, 17.5rem);
+    line-height: 0.84;
+    letter-spacing: -0.02em;
+    text-align: center;
+  }
+
+  .hero-intro {
+    display: grid;
+    gap: 14px;
+    justify-items: center;
+    text-align: center;
+  }
+  .hero-name {
+    font-size: var(--fs-3);
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  .nick {
+    white-space: nowrap;
+  }
+  /* >= 18.66px bold counts as large text: 3:1 is enough on the red bands */
+  .hero-role {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  .btn-dark {
+    background: var(--c-ink-display);
+    color: var(--c-fg);
+  }
+  .btn-dark:hover {
+    background: #000;
+  }
+  .btn-light {
+    background: var(--c-fg);
+    color: #000;
+  }
+  .btn-light:hover {
+    background: #fff;
+  }
+  .hero :focus-visible {
+    box-shadow: 0 0 0 3px var(--c-hero), 0 0 0 6px #000;
+  }
+
+  @media (min-width: 900px) {
+    .hero-intro {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      justify-items: start;
+      text-align: left;
+    }
+    .hero-intro > :not(.hero-cta) {
+      grid-column: 1;
+    }
+    .hero-cta {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      margin-top: 0;
+    }
+  }
+</style>

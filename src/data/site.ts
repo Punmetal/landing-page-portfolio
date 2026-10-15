@@ -1,0 +1,110 @@
+// Profile content. Source of truth: Drive portfolio frames (port-beta-6).
+// Notion Career Hub is supporting material only. Do not add claims that are
+// not in those sources; mark unknowns with [TODO].
+
+export const site = {
+  url: 'https://example.vercel.app', // [TODO] set once the Vercel domain is decided
+  title: 'Tutphong "Pun" Mungkalakul — Graphic & Visual Designer',
+  description:
+    'Portfolio of Tutphong "Pun" Mungkalakul, a Thai Graphic & Visual Designer growing into UI and web design. Key visuals, campaigns, editorial and character work.',
+  lang: 'en',
+};
+
+export const profile = {
+  fullName: 'Tutphong Mungkalakul',
+  nickname: 'Pun',
+  role: 'Graphic & Visual Designer',
+  direction: 'growing into UI and web',
+  // About text verbatim from Frame 1
+  about: [
+    "My name is Tutphong Mungkalakul, but you can call me Pun.",
+    "I graduated with a degree in Fine and Applied Arts (Graphic Design) from Sripatum University. I'm passionate about visual communication especially in areas like infographics, motion graphics, and UX/UI design. I'm always eager to learn new tools and improve my skills to create better, smarter design solutions.",
+  ],
+};
+
+export const contact = {
+  email: 'tutphong.mun@gmail.com',
+  linkedin: { label: 'linkedin.com/in/tutphong', href: 'https://www.linkedin.com/in/tutphong/' },
+  behance: { label: 'behance.net/tutphong', href: 'https://www.behance.net/tutphong' },
+  // Phone is intentionally not published. Pun must approve before adding it.
+};
+
+export interface Job {
+  period: string;
+  title: string;
+  company: string;
+  summary: string;
+}
+
+// Frame 2. Enter to Start summary lightly rewritten from first person to
+// match the others (same facts, nothing added) — approved by Pun.
+export const experience: Job[] = [
+  {
+    period: 'Dec 2025 – Sep 2026',
+    title: 'Graphic Designer',
+    company: 'S2O Festival',
+    summary:
+      'Developed key visual concepts, festival branding, and merchandise designs for S2O and K2O Songkran Music Festival campaigns, creating visual assets across digital, print, and event applications.',
+  },
+  {
+    period: 'Jan – Apr 2025',
+    title: 'Freelance Graphic Designer',
+    company: 'MollageBKK',
+    summary:
+      'Created visual artwork and thumbnails for MollageBKK, a creative media house behind film, ad, and branded content projects with international clients like Netflix Thailand.',
+  },
+  {
+    period: 'Mar – Aug 2024',
+    title: 'Outsource Graphic Designer',
+    company: 'Binance TH',
+    summary:
+      "Created campaign visuals and social media assets for Thailand's leading cryptocurrency exchange, collaborating with marketing teams to support promotional campaigns.",
+  },
+  {
+    period: '2022 – 2024',
+    title: 'Visual & Graphic Designer',
+    company: 'Enter to Start Co., Ltd.',
+    summary:
+      'Created artwork for social media posts, events, and video projects, including illustrations, infographics, posters, banners, and motion graphics.',
+  },
+];
+
+export const education = [
+  {
+    period: '2020 – 2022',
+    school: 'Sripatum University',
+    program: 'Fine and Applied Arts (Graphic Design)',
+  },
+  {
+    period: '2015 – 2020',
+    school: 'Viboon Business Administration Technological College Ramindra (VBAC)',
+    program: 'Computer Graphic',
+  },
+];
+
+// Skills: from the Resume (Notion, supporting source). Tools: Frame 2.
+export const skills = [
+  'Branding',
+  'Key Visual Design',
+  'Visual Identity',
+  'Campaign Design',
+  'Motion Graphics',
+  'Social Media Design',
+  'UI Design',
+];
+
+export type ToolId = 'ps' | 'ai' | 'ae' | 'pr' | 'lr' | 'id' | 'blender' | 'figma' | 'procreate';
+
+export const tools: Record<ToolId, { abbr: string; name: string }> = {
+  ps: { abbr: 'Ps', name: 'Photoshop' },
+  ai: { abbr: 'Ai', name: 'Illustrator' },
+  ae: { abbr: 'Ae', name: 'After Effects' },
+  pr: { abbr: 'Pr', name: 'Premiere Pro' },
+  lr: { abbr: 'Lr', name: 'Lightroom' },
+  id: { abbr: 'Id', name: 'InDesign' },
+  blender: { abbr: 'Bl', name: 'Blender' },
+  figma: { abbr: 'Fg', name: 'Figma' },
+  procreate: { abbr: 'Pc', name: 'Procreate' },
+};
+
+export const profileTools: ToolId[] = ['ps', 'ai', 'ae', 'pr', 'lr', 'blender', 'figma'];

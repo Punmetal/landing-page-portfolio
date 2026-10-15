@@ -1,0 +1,38 @@
+:root {
+  /* Color */
+  --c-bg: #1c1c1c;
+  --c-bg-raised: #242424;
+  --c-line: #3a3a3a;
+  --c-fg: #f2f2f2;
+  --c-muted: #a9a9a9;
+  --c-accent: #ff2a2a; /* 4.56:1 on --c-bg: OK for text >= 16px */
+  --c-hero: #e8222b;
+  --c-ink: #000; /* small text on red needs pure black for contrast */
+  --c-ink-display: #1c1c1c;
+
+  /* Type */
+  --f-display: 'Archivo Black', 'Arial Black', system-ui, sans-serif;
+  --f-body: 'IBM Plex Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --fs-0: 0.875rem;
+  --fs-1: 1rem;
+  --fs-2: 1.125rem;
+  --fs-3: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --fs-4: clamp(2rem, 1.4rem + 3vw, 3.5rem);
+  --fs-5: clamp(3.5rem, 2rem + 8vw, 8rem);
+
+  /* Layout */
+  --max-w: 1280px;
+  --gutter: 40px;
+  --gap: 16px;
+  --radius: 12px;
+  --section-y: clamp(72px, 10vw, 140px);
+
+  --focus: 0 0 0 3px var(--c-bg), 0 0 0 6px #fff;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --gutter: 20px;
+    --gap: 12px;
+  }
+}

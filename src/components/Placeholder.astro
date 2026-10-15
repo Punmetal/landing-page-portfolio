@@ -1,0 +1,52 @@
+---
+// Clearly labelled slot for an asset that does not exist yet. Never fakes content.
+interface Props {
+  kind: 'image' | 'video' | '3d';
+  label: string;
+  file: string;
+  class?: string;
+}
+const { kind, label, file, class: className } = Astro.props;
+const tag = { image: 'Image', video: 'Video', '3d': '3D model' }[kind];
+---
+
+<div class:list={['placeholder', className]} role="img" aria-label={`${tag} coming soon: ${label}`}>
+  <span class="ph-tag">{tag} · coming soon</span>
+  <span class="ph-label">{label}</span>
+  <code class="ph-file">{file}</code>
+</div>
+
+<style>
+  .placeholder {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 6px;
+    min-height: 200px;
+    height: 100%;
+    padding: 20px;
+    border: 2px dashed var(--c-line);
+    border-radius: var(--radius);
+    background: repeating-linear-gradient(-45deg, #222 0 12px, #1f1f1f 12px 24px);
+    color: var(--c-muted);
+  }
+  .ph-tag {
+    align-self: flex-start;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--c-accent);
+    color: #000;
+    font-size: var(--fs-0);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .ph-label {
+    color: var(--c-fg);
+    font-weight: 700;
+  }
+  .ph-file {
+    font-size: var(--fs-0);
+    word-break: break-all;
+  }
+</style>
