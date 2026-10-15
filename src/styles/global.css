@@ -81,7 +81,10 @@ a {
 }
 
 .section-title {
-  font-size: var(--fs-5);
+  font-family: var(--f-heading);
+  /* BBH Bartle is very wide: size from the container so the longest word
+     (--fit, its width in em) always fits; capped at --fs-5 */
+  font-size: min(var(--fs-5), calc(100cqi / var(--fit, 13.4)));
   color: var(--c-accent);
 }
 

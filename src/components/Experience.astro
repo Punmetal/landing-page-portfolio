@@ -4,7 +4,7 @@ import ToolChips from './ToolChips.astro';
 ---
 
 <section class="exp container section" id="experience" aria-labelledby="exp-title">
-  <h2 id="exp-title" class="section-title display">Experience</h2>
+  <h2 id="exp-title" class="section-title display" style="--fit: 13.4">Experience</h2>
 
   <div class="grid">
     <ol class="timeline" role="list">
@@ -24,7 +24,7 @@ import ToolChips from './ToolChips.astro';
 
     <div class="side">
       <div class="block">
-        <h3 class="block-title display">Skills &amp; Tools</h3>
+        <h3 class="block-title display" style="--fit: 11.7">Skills &amp; Tools</h3>
         <ul class="skills" role="list" aria-label="Skills">
           {skills.map((s) => <li>{s}</li>)}
         </ul>
@@ -32,7 +32,7 @@ import ToolChips from './ToolChips.astro';
       </div>
 
       <div class="block">
-        <h3 class="block-title display">Education</h3>
+        <h3 class="block-title display" style="--fit: 11.7">Education</h3>
         <ol class="timeline edu" role="list">
           {
             education.map((e) => (
@@ -53,6 +53,7 @@ import ToolChips from './ToolChips.astro';
 
 <style>
   .exp {
+    container-type: inline-size;
     border-top: 1px solid var(--c-line);
   }
   .grid {
@@ -117,11 +118,13 @@ import ToolChips from './ToolChips.astro';
     align-content: start;
   }
   .block {
+    container-type: inline-size;
     display: grid;
     gap: 20px;
   }
   .block-title {
-    font-size: var(--fs-4);
+    font-family: var(--f-heading);
+    font-size: min(var(--fs-4), calc(100cqi / var(--fit, 11.7)));
     color: var(--c-accent);
   }
   .skills {

@@ -61,6 +61,10 @@ Vercel preview once the real 2x exports are in (heavier images will cost some Pe
   Test it in headless/no-GPU browsers with `?liquid=force`.
 - Spine text back to black ink, debossed
 
+- Wordmark + section headings (About me, Experience, Skills & Tools, Education, Selected work)
+  use **BBH Bartle** (self-hosted, latin, ~8KB). It is very wide, so each heading is sized from its
+  container with `--fit` (longest word width in em) and capped at the old size
+
 ## Open questions
 - [ ] Sybil Husky: who is the client / project owner? Notion says "real work" but no name.
 - [ ] OK to show the contact line "Open to Visual, Graphic, Digital and UI / Web design roles."?

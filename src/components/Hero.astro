@@ -80,6 +80,7 @@ import LiquidBg from './LiquidBg.astro';
   }
 
   .hero-body {
+    container-type: inline-size;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -89,12 +90,14 @@ import LiquidBg from './LiquidBg.astro';
   }
 
   .wordmark {
+    font-family: var(--f-heading);
     display: flex;
     flex-direction: column;
     align-items: center;
     color: var(--c-ink-display);
     /* "FOLIO" spans the container width */
-    font-size: clamp(4.25rem, 22vw, 17.5rem);
+    /* "FOLIO" is ~6.5em wide in BBH Bartle: fit it to the container */
+    font-size: min(17.5rem, calc(100cqi / 6.7));
     line-height: 0.84;
     letter-spacing: -0.02em;
     text-align: center;

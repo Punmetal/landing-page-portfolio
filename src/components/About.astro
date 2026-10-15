@@ -10,7 +10,7 @@ const [intro, ...rest] = profile.about;
   </div>
 
   <div class="about-body">
-    <h2 id="about-title" class="section-title display">About<br />me</h2>
+    <h2 id="about-title" class="section-title display" style="--fit: 6.7">About<br />me</h2>
     <p class="about-intro">
       My name is <mark>{profile.fullName}</mark>, but you can call me {profile.nickname}.
     </p>
@@ -40,6 +40,7 @@ const [intro, ...rest] = profile.about;
     padding-bottom: 48px;
   }
   .about-body {
+    container-type: inline-size;
     display: grid;
     align-content: center;
     gap: 20px;

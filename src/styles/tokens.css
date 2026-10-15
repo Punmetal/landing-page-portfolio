@@ -26,6 +26,7 @@
 
   /* Type */
   --f-display: 'Archivo Black', 'Arial Black', system-ui, sans-serif;
+  --f-heading: 'BBH Bartle', 'Archivo Black', 'Arial Black', system-ui, sans-serif; /* section headings + wordmark */
   --f-body: 'IBM Plex Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --fs-0: 0.875rem;
   --fs-1: 1rem;
