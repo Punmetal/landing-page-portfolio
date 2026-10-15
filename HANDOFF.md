@@ -46,8 +46,8 @@ Vercel preview once the real 2x exports are in (heavier images will cost some Pe
 4. Rights confirmation before any public URL (below)
 
 ## Design changes after first review
-- Project index is now a CSS 3D **bookshelf** (bright book per project, typographic covers,
-  hover lifts/turns the book, leans toward the cursor; touch = horizontal cover scroller)
+- Project index is now a CSS 3D **bookshelf** (cloth-bound books, foil-stamped holographic title label;
+  hover lifts, 1st click turns it cover-out, 2nd click goes to the project; touch = cover scroller)
 - About photo replaced by a hanging **holographic ID card** (name, "Visual Designer"), foil and
   glare follow the cursor, idle sway, glossy metallic rim; reduced-motion users get a static card
 - Grain texture removed. **Light mode** added (follows the OS by default; the switch in the nav
