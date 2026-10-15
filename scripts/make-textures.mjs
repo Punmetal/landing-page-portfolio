@@ -1,8 +1,6 @@
-// Generated textures:
-//  1. Red liquid/swirl hero background (stand-in for the portfolio cover
-//     texture) from an SVG turbulence filter
-//     -> public/media/hero-swirl-1600.webp, hero-swirl-2400.webp
-//  2. Film-grain tile used on dark sections -> public/media/grain.png
+// Red liquid/swirl hero background (stand-in for the portfolio cover
+// texture) from an SVG turbulence filter
+//   -> public/media/hero-swirl-1600.webp, hero-swirl-2400.webp
 // Replace with a real texture export by dropping assets-src/images/hero-swirl.jpg
 // and running `npm run assets` instead.
 //
@@ -38,18 +36,4 @@ for (const w of [1600, 2400]) {
     .webp({ quality: 72 })
     .toFile(`public/media/hero-swirl-${w}.webp`);
 }
-// Grain: 160px tile of random light/dark specks with low alpha.
-const SIZE = 160;
-const px = Buffer.alloc(SIZE * SIZE * 4);
-let seed = 42;
-const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-for (let i = 0; i < SIZE * SIZE; i++) {
-  const v = rand() > 0.5 ? 255 : 0;
-  px[i * 4] = px[i * 4 + 1] = px[i * 4 + 2] = v;
-  px[i * 4 + 3] = Math.floor(rand() * 22);
-}
-await sharp(px, { raw: { width: SIZE, height: SIZE, channels: 4 } })
-  .png({ compressionLevel: 9, palette: true })
-  .toFile('public/media/grain.png');
-
-console.log('textures -> public/media/hero-swirl-{1600,2400}.webp, grain.png');
+console.log('hero texture -> public/media/hero-swirl-{1600,2400}.webp');

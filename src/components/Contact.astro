@@ -26,13 +26,6 @@ const year = new Date().getFullYear();
     background: var(--c-hero) image-set(url('/media/hero-swirl-1600.webp') 1x, url('/media/hero-swirl-2400.webp') 2x) center / cover;
     color: var(--c-ink);
   }
-  .contact::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: url('/media/grain.png');
-    pointer-events: none;
-  }
   .inner {
     position: relative;
     z-index: 1;
@@ -56,7 +49,7 @@ const year = new Date().getFullYear();
     padding: 0.45em 0.7em;
     border-radius: 14px;
     background: var(--c-ink-display);
-    color: var(--c-fg);
+    color: #f2f2f2;
     font-family: var(--f-display);
     font-size: clamp(1rem, 0.55rem + 3vw, 3rem);
     text-decoration: none;
@@ -79,7 +72,7 @@ const year = new Date().getFullYear();
     padding: 0 22px;
     border-radius: 999px;
     background: var(--c-ink-display);
-    color: var(--c-fg);
+    color: #f2f2f2;
     font-weight: 700;
     text-decoration: none;
   }

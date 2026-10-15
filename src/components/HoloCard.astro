@@ -27,6 +27,7 @@ const { role } = Astro.props;
         <span class="card-role">{role}</span>
       </figcaption>
 
+      <span class="rim" aria-hidden="true"></span>
       <span class="foil" aria-hidden="true"></span>
       <span class="scales" aria-hidden="true"></span>
       <span class="glare" aria-hidden="true"></span>
@@ -51,18 +52,25 @@ const { role } = Astro.props;
         card.style.setProperty('--ry', `${((x - 0.5) * 24).toFixed(2)}deg`);
         card.style.setProperty('--rx', `${((0.5 - y) * 20).toFixed(2)}deg`);
         card.style.setProperty('--hyp', Math.hypot(x - 0.5, y - 0.5).toFixed(3));
+        // rim highlight faces the cursor
+        card.style.setProperty('--rim-angle', `${((Math.atan2(y - 0.5, x - 0.5) * 180) / Math.PI + 90).toFixed(1)}deg`);
         card.classList.add('is-active');
       });
     });
     card.addEventListener('pointerleave', () => {
       cancelAnimationFrame(raf);
       card.classList.remove('is-active');
-      ['--mx', '--my', '--rx', '--ry', '--hyp'].forEach((p) => card.style.removeProperty(p));
+      ['--mx', '--my', '--rx', '--ry', '--hyp', '--rim-angle'].forEach((p) => card.style.removeProperty(p));
     });
   });
 </script>
 
 <style>
+  @property --rim-angle {
+    syntax: '<angle>';
+    inherits: true;
+    initial-value: 0deg;
+  }
   .holo-stage {
     position: relative;
     display: grid;
@@ -85,7 +93,7 @@ const { role } = Astro.props;
 
   .holo-swing {
     /* drop shadow on the wrapper so it follows the swing */
-    filter: drop-shadow(0 28px 34px rgb(0 0 0 / 0.55)) drop-shadow(0 6px 10px rgb(0 0 0 / 0.35));
+    filter: drop-shadow(0 28px 34px var(--c-shadow)) drop-shadow(0 6px 10px var(--c-shadow-soft));
     transform-origin: 50% -40px;
     animation: sway 6s ease-in-out infinite;
   }
@@ -108,7 +116,7 @@ const { role } = Astro.props;
     --rx: 0deg;
     --ry: 0deg;
     --hyp: 0;
-    --radius-card: 20px;
+    --radius-card: 26px;
     position: relative;
     display: grid;
     grid-template-rows: auto 1fr;
@@ -151,7 +159,7 @@ const { role } = Astro.props;
     position: relative;
     z-index: 2;
     aspect-ratio: 1 / 1;
-    border-radius: 14px;
+    border-radius: 18px;
     overflow: hidden;
     background: radial-gradient(120% 90% at 30% 20%, #ff3b44, var(--c-hero) 55%, #c4151d);
     box-shadow:
@@ -176,7 +184,7 @@ const { role } = Astro.props;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: 60% 40%;
+    object-position: 50% 30%;
   }
   .card-id {
     position: relative;
@@ -225,6 +233,50 @@ const { role } = Astro.props;
     border-radius: inherit;
     pointer-events: none;
   }
+  /* glossy metallic stroke around the card; the bright streak slowly
+     circles the edge, and faces the cursor on hover */
+  .rim {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    padding: 3px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--rim-angle),
+      #ffffff 0deg,
+      #fdf3ff 18deg,
+      #b8bdcc 60deg,
+      #7d8496 110deg,
+      #c9cdd8 150deg,
+      #ffffff 180deg,
+      #ffd9f1 200deg,
+      #c9f6ff 225deg,
+      #9aa1b2 280deg,
+      #e9ebf1 330deg,
+      #ffffff 360deg
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    filter: drop-shadow(0 0 1.5px rgb(255 255 255 / 0.9));
+    animation: rim-spin 7s linear infinite;
+    transition: --rim-angle 0.35s ease-out;
+    pointer-events: none;
+  }
+  .holo-card.is-active .rim {
+    animation: none;
+  }
+  @keyframes rim-spin {
+    to {
+      --rim-angle: 360deg;
+    }
+  }
+
   /* rainbow foil: slides with the pointer, under the photo and type */
   .foil {
     z-index: 1;
@@ -289,7 +341,8 @@ const { role } = Astro.props;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .holo-swing {
+    .holo-swing,
+    .rim {
       animation: none;
     }
     .holo-card {

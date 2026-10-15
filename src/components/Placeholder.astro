@@ -27,7 +27,7 @@ const tag = { image: 'Image', video: 'Video', '3d': '3D model' }[kind];
     padding: clamp(12px, 3vw, 20px);
     border: 2px dashed var(--c-line);
     border-radius: var(--radius);
-    background: repeating-linear-gradient(-45deg, #222 0 12px, #1f1f1f 12px 24px);
+    background: repeating-linear-gradient(-45deg, var(--c-ph-a) 0 12px, var(--c-ph-b) 12px 24px);
     color: var(--c-muted);
   }
   .ph-tag {
@@ -35,7 +35,7 @@ const tag = { image: 'Image', video: 'Video', '3d': '3D model' }[kind];
     padding: 2px 8px;
     border-radius: 6px;
     background: var(--c-accent);
-    color: #000;
+    color: var(--c-bg); /* >= 4.5:1 against the accent in both themes */
     font-size: 0.6875rem;
     font-weight: 700;
     line-height: 1.5;
