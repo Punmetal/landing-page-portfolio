@@ -7,6 +7,7 @@
 import type { Media, Project } from '../data/projects';
 import { FULL_REGION, INTRO_REGION, layouts, motionBoxes, type Box, type LayoutItem } from '../data/layouts';
 import Picture from './Picture.astro';
+import { posterUrl } from '../lib/media';
 import VideoSlot from './VideoSlot.astro';
 import ModelSlot from './ModelSlot.astro';
 import ToolChips from './ToolChips.astro';
@@ -146,7 +147,14 @@ const sizes = (box: Box) => `(min-width: 1200px) ${Math.round(((box[2] - box[0])
             <div class:list={['group', { cols: !g.alone }]}>
             {g.items.map((it) => (
             <div class:list={['item', `item-${it.type}`]} style={place(it.box, s.region)}>
-              {it.type === 'image' && <Picture name={it.m.name} alt={it.m.alt} sizes={sizes(it.box)} />}
+              {it.type === 'image' &&
+                (posterUrl(it.m.name) ? (
+                  <button type="button" class="zoom" data-zoom={posterUrl(it.m.name)} data-zoom-alt={it.m.alt} aria-label={`View larger: ${it.m.alt}`}>
+                    <Picture name={it.m.name} alt="" sizes={sizes(it.box)} />
+                  </button>
+                ) : (
+                  <Picture name={it.m.name} alt={it.m.alt} sizes={sizes(it.box)} />
+                ))}
               {it.type === 'video' && <VideoSlot name={it.m.name} label={it.m.label} poster={it.m.poster} />}
               {it.type === 'model' && <ModelSlot name={it.m.name} label={it.m.label} poster={it.m.poster} />}
               {it.type === 'palette' && p.palette && (
@@ -242,6 +250,24 @@ const sizes = (box: Box) => `(min-width: 1200px) ${Math.round(((box[2] - box[0])
     width: 100%;
     border-radius: var(--radius);
     background: var(--c-bg-raised);
+  }
+  /* image buttons open the lightbox */
+  .zoom {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius);
+    background: none;
+    cursor: zoom-in;
+    transition: transform 0.25s ease, filter 0.25s ease;
+  }
+  .zoom:hover {
+    filter: brightness(1.06);
+  }
+  .zoom:focus-visible {
+    outline: none;
+    box-shadow: var(--focus);
   }
   .item-model :global(.model-slot) {
     max-width: 420px;
@@ -372,6 +398,7 @@ const sizes = (box: Box) => `(min-width: 1200px) ${Math.round(((box[2] - box[0])
     .group.cols .item {
       margin: 0;
     }
+    .item .zoom,
     .item :global(picture),
     .item :global(img),
     .item :global(video),

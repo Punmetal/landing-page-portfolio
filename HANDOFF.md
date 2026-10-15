@@ -72,6 +72,11 @@ Vercel preview once the real 2x exports are in (heavier images will cost some Pe
   Below 1200px the same markup stacks (text, then images in 2 columns). Real exports: export each
   image at 2× its box size with the same aspect ratio (see README › Adding media)
 
+- **Sticky nav** slides in after the hero (hidden over Contact): current project "03 / 07 …"
+  with a jump back to the shelf, section links, theme switch. Phones: brand + project + switch
+- **Lightbox**: every placed project image is a button that opens it full-screen (native
+  `<dialog>`); arrows/swipe step through that project's images, Esc/× closes, focus returns
+
 ## Open questions
 - [ ] Sybil Husky: who is the client / project owner? Notion says "real work" but no name.
 - [ ] OK to show the contact line "Open to Visual, Graphic, Digital and UI / Web design roles."?

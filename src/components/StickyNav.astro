@@ -1,0 +1,181 @@
+---
+// Compact nav that slides in once the hero is out of view. Shows which
+// project is on screen ("03 / 07 Thumbnails & Posters"), a jump back to the
+// bookshelf, the main links and the theme switch.
+import { projects } from '../data/projects';
+import ThemeToggle from './ThemeToggle.astro';
+const total = String(projects.length).padStart(2, '0');
+---
+
+<header class="sticky-nav" data-sticky-nav aria-label="Page navigation" inert>
+  <div class="bar">
+    <a class="brand" href="#top" aria-label="Pun, back to top">PUN</a>
+
+    <a class="now" href="#work" data-now hidden>
+      <span class="now-no" data-now-no>01</span><span class="now-of">/ {total}</span>
+      <span class="now-title" data-now-title></span>
+      <span class="now-back">Shelf ↑</span>
+    </a>
+
+    <nav aria-label="Sections">
+      <ul role="list">
+        <li><a href="#work">Work</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><ThemeToggle /></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const nav = document.querySelector<HTMLElement>('[data-sticky-nav]')!;
+  const hero = document.querySelector('.hero');
+  const contact = document.querySelector('#contact');
+  const now = nav.querySelector<HTMLAnchorElement>('[data-now]')!;
+  const nowNo = nav.querySelector<HTMLElement>('[data-now-no]')!;
+  const nowTitle = nav.querySelector<HTMLElement>('[data-now-title]')!;
+
+  // show the bar once the hero has scrolled away, hide it over the red contact block
+  let pastHero = false;
+  let atContact = false;
+  const sync = () => {
+    const show = pastHero && !atContact;
+    nav.classList.toggle('is-visible', show);
+    nav.inert = !show;
+  };
+  if (hero) new IntersectionObserver(([e]) => ((pastHero = !e.isIntersecting), sync())).observe(hero);
+  if (contact)
+    new IntersectionObserver(([e]) => ((atContact = e.isIntersecting), sync()), { rootMargin: '0px 0px -40% 0px' }).observe(contact);
+
+  // current project: the article crossing the middle of the viewport
+  const articles = [...document.querySelectorAll<HTMLElement>('article.project')];
+  const titles = new Map(articles.map((a) => [a, a.querySelector('.title')?.lastChild?.textContent?.trim() ?? '']));
+  const io = new IntersectionObserver(
+    (entries) => {
+      const hit = entries.find((e) => e.isIntersecting);
+      if (hit) {
+        const a = hit.target as HTMLElement;
+        nowNo.textContent = String(articles.indexOf(a) + 1).padStart(2, '0');
+        nowTitle.textContent = titles.get(a) ?? '';
+        now.hidden = false;
+      } else if (!articles.some((a) => {
+        const r = a.getBoundingClientRect();
+        return r.top < innerHeight / 2 && r.bottom > innerHeight / 2;
+      })) {
+        now.hidden = true;
+      }
+    },
+    { rootMargin: '-50% 0px -50% 0px' },
+  );
+  articles.forEach((a) => io.observe(a));
+</script>
+
+<style>
+  .sticky-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    padding: env(safe-area-inset-top, 0px) max(var(--gutter), env(safe-area-inset-right, 0px)) 0
+      max(var(--gutter), env(safe-area-inset-left, 0px));
+    background: color-mix(in srgb, var(--c-bg) 82%, transparent);
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    border-bottom: 1px solid var(--c-line);
+    transform: translateY(-110%);
+    transition: transform 0.35s cubic-bezier(0.3, 0.7, 0.2, 1);
+  }
+  .sticky-nav.is-visible {
+    transform: none;
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: clamp(12px, 2.5vw, 28px);
+    max-width: var(--max-w);
+    min-height: 56px;
+    margin-inline: auto;
+  }
+  .brand {
+    font-family: var(--f-display);
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    color: var(--c-accent);
+  }
+
+  .now {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--c-bg-raised);
+    color: var(--c-fg);
+    text-decoration: none;
+    font-size: var(--fs-0);
+  }
+  .now[hidden] {
+    display: none;
+  }
+  .now-no {
+    font-family: var(--f-display);
+    color: var(--c-accent);
+  }
+  .now-of {
+    color: var(--c-muted);
+  }
+  .now-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 700;
+  }
+  .now-back {
+    flex: none;
+    color: var(--c-muted);
+  }
+  .now:hover .now-back {
+    color: var(--c-accent);
+  }
+
+  nav {
+    margin-left: auto;
+  }
+  nav ul {
+    display: flex;
+    align-items: center;
+    gap: clamp(12px, 2.5vw, 28px);
+    margin: 0;
+  }
+  nav a {
+    display: inline-block;
+    padding-block: 10px;
+    font-weight: 700;
+    font-size: var(--fs-0);
+    color: var(--c-fg);
+    text-decoration: none;
+  }
+  nav a:hover {
+    color: var(--c-accent);
+  }
+  .sticky-nav :global(.theme-toggle:focus-visible) {
+    box-shadow: var(--focus);
+  }
+
+  @media (max-width: 640px) {
+    /* phones: brand, current project, theme switch */
+    nav li:not(:last-child),
+    .now-back {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sticky-nav {
+      transition: none;
+    }
+  }
+</style>

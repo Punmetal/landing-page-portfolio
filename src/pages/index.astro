@@ -6,10 +6,13 @@ import ProjectIndex from '../components/ProjectIndex.astro';
 import ProjectSection from '../components/ProjectSection.astro';
 import Experience from '../components/Experience.astro';
 import Contact from '../components/Contact.astro';
+import StickyNav from '../components/StickyNav.astro';
+import Lightbox from '../components/Lightbox.astro';
 import { projects } from '../data/projects';
 ---
 
 <Base>
+  <StickyNav />
   <Hero />
   <main id="main">
     <About />
@@ -20,4 +23,5 @@ import { projects } from '../data/projects';
     </section>
     <Contact />
   </main>
+  <Lightbox />
 </Base>
