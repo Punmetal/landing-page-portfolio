@@ -1,0 +1,149 @@
+---
+import { education, experience, profileTools, skills } from '../data/site';
+import ToolChips from './ToolChips.astro';
+---
+
+<section class="exp container section" id="experience" aria-labelledby="exp-title">
+  <h2 id="exp-title" class="section-title display">Experience</h2>
+
+  <div class="grid">
+    <ol class="timeline" role="list">
+      {
+        experience.map((job) => (
+          <li>
+            <p class="meta">
+              <span class="period">{job.period}</span>
+              <span class="title">{job.title}</span>
+            </p>
+            <h3 class="company">{job.company}</h3>
+            <p class="summary">{job.summary}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="side">
+      <div class="block">
+        <h3 class="block-title display">Skills &amp; Tools</h3>
+        <ul class="skills" role="list" aria-label="Skills">
+          {skills.map((s) => <li>{s}</li>)}
+        </ul>
+        <ToolChips ids={profileTools} label="Software" />
+      </div>
+
+      <div class="block">
+        <h3 class="block-title display">Education</h3>
+        <ol class="timeline edu" role="list">
+          {
+            education.map((e) => (
+              <li>
+                <p class="meta">
+                  <span class="period">{e.period}</span>
+                </p>
+                <h4 class="company">{e.school}</h4>
+                <p class="summary">{e.program}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .exp {
+    border-top: 1px solid var(--c-line);
+  }
+  .grid {
+    display: grid;
+    gap: clamp(48px, 6vw, 96px);
+    margin-top: clamp(32px, 5vw, 64px);
+  }
+  .timeline {
+    display: grid;
+    gap: 32px;
+    margin: 0;
+  }
+  .timeline li {
+    position: relative;
+    padding-left: 28px;
+  }
+  .timeline li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--c-accent);
+  }
+  .timeline li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: calc(0.55em + 14px);
+    bottom: -28px;
+    width: 2px;
+    background: linear-gradient(var(--c-accent), transparent);
+    opacity: 0.6;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 12px;
+    font-size: var(--fs-0);
+  }
+  .period {
+    font-weight: 700;
+  }
+  .title {
+    color: var(--c-muted);
+  }
+  .company {
+    margin: 4px 0 6px;
+    color: var(--c-accent);
+    font-size: var(--fs-3);
+    line-height: 1.25;
+  }
+  .summary {
+    color: #d8d8d8;
+    max-width: 62ch;
+  }
+  .side {
+    display: grid;
+    gap: 56px;
+    align-content: start;
+  }
+  .block {
+    display: grid;
+    gap: 20px;
+  }
+  .block-title {
+    font-size: var(--fs-4);
+    color: var(--c-accent);
+  }
+  .skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+  }
+  .skills li {
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--c-bg-raised);
+    font-size: var(--fs-0);
+    font-weight: 700;
+  }
+  .edu .company {
+    font-size: var(--fs-2);
+  }
+
+  @media (min-width: 960px) {
+    .grid {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    }
+  }
+</style>

@@ -112,3 +112,10 @@ for (const [frame, name, x0, y0, x1, y1] of CROPS) {
 
 writeFileSync(LEDGER, JSON.stringify(ledger, null, 2));
 console.log(`stand-ins: ${made} written, ${kept} real exports left untouched`);
+
+// Open Graph image from the portfolio cover (Frame 0), 1200x630.
+await sharp(join(FRAMES, 'frame-0.jpg'))
+  .resize(1200, 630, { fit: 'cover' })
+  .jpeg({ quality: 82, mozjpeg: true })
+  .toFile('public/og.jpg');
+console.log('og image -> public/og.jpg');

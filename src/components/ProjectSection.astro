@@ -53,6 +53,9 @@ const titleId = `${p.slug}-title`;
     gap: clamp(28px, 4vw, 56px);
     padding-block: clamp(56px, 8vw, 112px);
     border-top: 1px solid var(--c-line);
+    /* skip layout/paint of off-screen projects until scrolled near */
+    content-visibility: auto;
+    contain-intrinsic-size: auto 1600px;
   }
   .info-inner {
     display: grid;

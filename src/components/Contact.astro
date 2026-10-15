@@ -1,0 +1,97 @@
+---
+import { contact } from '../data/site';
+const year = new Date().getFullYear();
+---
+
+<section class="contact" id="contact" aria-labelledby="contact-title">
+  <div class="container inner">
+    <h2 id="contact-title" class="display big">Let’s<br />talk</h2>
+    <p class="lead">Open to Visual, Graphic, Digital and UI / Web design roles.</p>
+
+    <a class="email" href={`mailto:${contact.email}`}>{contact.email}</a>
+
+    <ul class="links" role="list">
+      <li><a href={contact.linkedin.href} rel="noopener" target="_blank">LinkedIn <span class="visually-hidden">(opens in a new tab)</span></a></li>
+      <li><a href={contact.behance.href} rel="noopener" target="_blank">Behance <span class="visually-hidden">(opens in a new tab)</span></a></li>
+      <li><a href="#top">Back to top ↑</a></li>
+    </ul>
+
+    <p class="foot">© {year} Tutphong Mungkalakul</p>
+  </div>
+</section>
+
+<style>
+  .contact {
+    position: relative;
+    background: var(--c-hero) image-set(url('/media/hero-swirl-1600.webp') 1x, url('/media/hero-swirl-2400.webp') 2x) center / cover;
+    color: var(--c-ink);
+  }
+  .contact::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('/media/grain.png');
+    pointer-events: none;
+  }
+  .inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 24px;
+    padding-block: var(--section-y) 32px;
+  }
+  .big {
+    font-size: clamp(4rem, 2rem + 12vw, 14rem);
+    color: var(--c-ink-display);
+    line-height: 0.82;
+  }
+  .lead {
+    font-size: 1.25rem;
+    font-weight: 700;
+    max-width: 32ch;
+  }
+  .email {
+    justify-self: start;
+    max-width: 100%;
+    padding: 0.45em 0.7em;
+    border-radius: 14px;
+    background: var(--c-ink-display);
+    color: var(--c-fg);
+    font-family: var(--f-display);
+    font-size: clamp(1rem, 0.55rem + 3vw, 3rem);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  .email:hover {
+    background: #000;
+    color: #fff;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 8px 0 0;
+  }
+  .links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 22px;
+    border-radius: 999px;
+    background: var(--c-ink-display);
+    color: var(--c-fg);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .links a:hover {
+    background: #000;
+  }
+  .foot {
+    margin-top: clamp(40px, 8vw, 96px);
+    font-size: var(--fs-0);
+    font-weight: 700;
+  }
+  .contact :focus-visible {
+    box-shadow: 0 0 0 3px var(--c-hero), 0 0 0 6px #000;
+  }
+</style>

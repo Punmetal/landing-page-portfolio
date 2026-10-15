@@ -8,7 +8,7 @@
   --c-accent: #ff2a2a; /* 4.56:1 on --c-bg: OK for text >= 16px */
   --c-hero: #e8222b;
   --c-ink: #000; /* small text on red needs pure black for contrast */
-  --c-ink-display: #1c1c1c;
+  --c-ink-display: #111; /* >= 3:1 on the darker swirl bands for large text */
 
   /* Type */
   --f-display: 'Archivo Black', 'Arial Black', system-ui, sans-serif;
