@@ -9,8 +9,8 @@ Not deployed. Repo is private. Site carries `noindex` until Pun approves going p
 
 ### Done
 - Astro static site, self-hosted Archivo Black + IBM Plex Sans Thai, no analytics or trackers
-- Sections: Hero (red swirl, PORTFOLIO wordmark, CTAs) → About → Project index (7 cards)
-  → 7 project sections → Experience / Skills & Tools / Education → Contact (red block, back to top)
+- Sections: Hero (red swirl, PORTFOLIO wordmark, CTAs) → About → Experience / Skills & Tools /
+  Education → Selected work (bookshelf) → 7 project sections → Contact (red block, back to top)
 - Content from Drive frames (port-beta-6). Decisions applied:
   - Project 02 title follows the poster: **Startup Standup Comedy**
   - All projects use the heading **My Role**

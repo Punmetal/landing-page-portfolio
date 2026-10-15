@@ -13,11 +13,11 @@ import { projects } from '../data/projects';
   <Hero />
   <main id="main">
     <About />
+    <Experience />
     <ProjectIndex />
     <section aria-label="Projects">
       {projects.map((project) => <ProjectSection project={project} />)}
     </section>
-    <Experience />
     <Contact />
   </main>
 </Base>
