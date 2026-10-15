@@ -44,6 +44,8 @@ const posterSrc = posterUrl(poster);
       (entries, obs) => {
         if (entries.some((e) => e.isIntersecting)) {
           obs.disconnect();
+          // self-hosted Draco decoder (scripts/copy-draco.mjs); must be set before the import
+          (self as any).ModelViewerElement = { dracoDecoderLocation: '/draco/' };
           import('@google/model-viewer');
         }
       },

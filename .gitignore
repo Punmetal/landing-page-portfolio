@@ -13,3 +13,6 @@ assets-src/
 
 # Local preview screenshots
 previews/
+
+# Draco decoder, copied from three.js by scripts/copy-draco.mjs
+public/draco/

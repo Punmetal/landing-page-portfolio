@@ -46,7 +46,7 @@ Originals go in `assets-src/` (ignored by git, keep a copy on Drive). Optimized 
 | --- | --- | --- | --- |
 | `assets-src/images/` | Figma exports at 2x (JPG/PNG) | `npm run assets` | `<name>-800/1600.webp` + `.avif`, manifest with width/height |
 | `assets-src/video/` | MOV/MP4 masters | `npm run assets:video` then `npm run assets` | `<name>.mp4` (H.264) + `<name>.webm` (VP9), muted, ≤1280px, poster |
-| `assets-src/3d/` | GLB from Blender (File › Export › glTF Binary) | `npm run assets:3d` | Draco-compressed `<name>.glb`, WebP textures ≤2048 |
+| `assets-src/3d/` | GLB from Blender (File › Export › glTF Binary, or the bake script below) | `npm run assets:3d` | Draco-compressed `<name>.glb`, WebP textures ≤2048 |
 | `assets-src/frames/` | Portfolio frames (Frame 0–12) | `npm run assets:standins` | rough stand-in crops in `assets-src/images/`, `public/og.jpg` |
 | — | generated textures | `npm run assets:textures` | `hero-swirl-*.webp`, `grain.png` |
 
@@ -108,6 +108,27 @@ How media loads:
 - **Video:** nothing downloads until the slot is near the viewport; autoplays muted/looped, pauses
   off-screen; with `prefers-reduced-motion` it shows controls instead of autoplaying.
 - **3D:** `<model-viewer>` (~1 MB) is only fetched when a 3D slot scrolls into view; poster image first.
+  The Draco decoder is self-hosted (`scripts/copy-draco.mjs` copies it from three.js into
+  `public/draco/` before every `dev`/`build`), so no request goes to Google's CDN.
+
+### Baking a Blender scene for the web
+
+glTF only understands a plain Principled BSDF with image textures. Procedural materials, Layer
+Weight ramps, real displacement and light from emissive objects are lost on export, so they are
+baked first. `scripts/blender/bake-k2o-logo.py` does this for the K2O logo and is a template for
+other scenes:
+
+```bash
+blender -b assets-src/3d/K2O_Logo_001.blend --python scripts/blender/bake-k2o-logo.py -- \
+  assets-src/3d/01-k2o-logo.glb assets-src/3d/k2o-bake
+npm run assets:3d
+```
+
+What it does: converts curves and modifiers to meshes, joins the metal parts into one mesh with a
+fresh UV atlas, bakes base color, ORM (AO / roughness / metallic) and a tangent normal map at
+2048px, bakes the light the neon throws onto the metal into an emissive "glow" map, turns the neon
+into an emissive material and the glass into a transmission material, then centres the model at
+1 unit wide and exports a GLB (+Y up, no Draco; `assets:3d` compresses it).
 - **Embeds:** click-to-load facade, no third-party request until the visitor clicks.
 
 ## Deploy (Vercel)

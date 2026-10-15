@@ -4,7 +4,9 @@
   "type": "module",
   "version": "0.1.0",
   "scripts": {
+    "predev": "node scripts/copy-draco.mjs",
     "dev": "astro dev",
+    "prebuild": "node scripts/copy-draco.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "assets": "node scripts/optimize-images.mjs",

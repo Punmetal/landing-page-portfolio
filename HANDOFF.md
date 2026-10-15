@@ -1,6 +1,6 @@
 # HANDOFF
 
-_Last updated: 2026-10-15 (cloud session). Branch: `claude/amazing-gauss-wbx2iv`. Nothing merged to `main` yet._
+_Last updated: 2026-10-15 (cloud session, K2O 3D logo baked). Branch: `claude/amazing-gauss-wbx2iv`. Nothing merged to `main` yet._
 
 ## Status
 
@@ -77,6 +77,15 @@ Vercel preview once the real 2x exports are in (heavier images will cost some Pe
 - **Lightbox**: every placed project image is a button that opens it full-screen (native
   `<dialog>`); arrows/swipe step through that project's images, Esc/× closes, focus returns
 
+- **K2O 3D logo is live** in the K2O "Motion & 3D" slide (`public/media/01-k2o-logo.glb`, ~1.2 MB).
+  Baked from Pun's `K2O_Logo_001.blend` with `scripts/blender/bake-k2o-logo.py` (Blender 5.2, run
+  headless): metal joined into one mesh + 2048 atlas (base color, ORM, normal), neon light baked
+  onto the metal as an emissive glow map, neon = emissive, glass = transmission, drops = faint
+  alpha gloss. What glTF cannot do: the neon's facing-ratio ramp and bloom halo, real displacement.
+  Source `.blend` and the baked PNGs stay in `assets-src/3d/` (git-ignored)
+- Draco decoder is self-hosted (`public/draco/`, copied from three.js on dev/build): model-viewer
+  no longer calls www.gstatic.com
+
 ## Open questions
 - [ ] Sybil Husky: who is the client / project owner? Notion says "real work" but no name.
 - [ ] OK to show the contact line "Open to Visual, Graphic, Digital and UI / Web design roles."?
@@ -117,7 +126,8 @@ cropped from the 1280px frames (many are only 160–430px wide, so they look sof
 - `01-k2o-teaser` · `02-standup-motion` · `06-16p-flip` (book flip-through) · `07-sybil-prototype`
 
 **3D (GLB from Blender into `assets-src/3d/`):**
-- `01-k2o-logo.glb` · `07-sybil-card.glb`
+- ~~`01-k2o-logo.glb`~~ done: baked from `K2O_Logo_001.blend` (see below)
+- `07-sybil-card.glb`
 
 
 **Other:**
