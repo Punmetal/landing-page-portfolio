@@ -55,6 +55,12 @@ Vercel preview once the real 2x exports are in (heavier images will cost some Pe
   saves the visitor's choice in localStorage). Red hero/contact stay red in both themes.
   Lighthouse mobile: dark 100/100, light 99–100/100 (Perf/A11y)
 
+- Hero and Contact red backgrounds are a **live WebGL liquid** (slow looping domain-warped bands,
+  ~30fps at 0.6x resolution, paused off-screen). Skipped on software rendering (no GPU) and
+  starts after load, so Lighthouse stays 100; static swirl image is the fallback.
+  Test it in headless/no-GPU browsers with `?liquid=force`.
+- Spine text back to black ink, debossed
+
 ## Open questions
 - [ ] Sybil Husky: who is the client / project owner? Notion says "real work" but no name.
 - [ ] OK to show the contact line "Open to Visual, Graphic, Digital and UI / Web design roles."?

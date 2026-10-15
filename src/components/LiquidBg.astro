@@ -1,0 +1,136 @@
+---
+// Animated red liquid background (WebGL fragment shader, no library).
+// Sits behind a section's content; the section's static swirl image stays
+// underneath as the fallback (no WebGL, reduced motion before first frame).
+// Renders at reduced resolution, ~30fps, only while on screen, and starts
+// after the page has loaded. Skipped on software (no-GPU) rendering, where
+// it would block the main thread; the static image shows instead.
+// With prefers-reduced-motion it draws a single still frame.
+// Append ?liquid=force to the URL to bypass the GPU check (testing).
+---
+
+<canvas class="liquid" aria-hidden="true"></canvas>
+
+<script>
+  const VERT = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
+  // Domain-warped fbm, quantised into the two-tone bands of the cover texture
+  const FRAG = `
+precision mediump float;
+uniform vec2 r;
+uniform float t;
+float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float n(vec2 p){vec2 i=floor(p),f=fract(p);vec2 u=f*f*(3.-2.*f);
+  return mix(mix(h(i),h(i+vec2(1,0)),u.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),u.x),u.y);}
+float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<4;i++){v+=a*n(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return v;}
+void main(){
+  vec2 uv=gl_FragCoord.xy/max(r.x,r.y);
+  vec2 p=uv*vec2(2.2,3.2);
+  vec2 q=vec2(fbm(p+vec2(0.,t*.035)),fbm(p+vec2(5.2,1.3)-t*.03));
+  vec2 w=vec2(fbm(p+1.8*q+vec2(1.7,9.2)+t*.02),fbm(p+1.8*q+vec2(8.3,2.8)-t*.025));
+  float v=fbm(p+2.2*w);
+  float b=fract(v*7.);
+  float s=smoothstep(.46,.5,b)*(1.-smoothstep(.96,1.,b));
+  vec3 base=vec3(.910,.133,.169);
+  vec3 band=mix(base,vec3(.788,.082,.114),.65);
+  gl_FragColor=vec4(mix(base,band,s),1.);
+}`;
+
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const SCALE = 0.6; // render resolution vs CSS pixels; the bands are soft anyway
+  const FRAME_MS = 1000 / 30;
+
+  const force = new URLSearchParams(location.search).get('liquid') === 'force';
+  const isSoftware = (gl: WebGLRenderingContext) => {
+    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+    const name = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : '';
+    return /swiftshader|llvmpipe|software|basic render/i.test(name);
+  };
+
+  const init = (canvas: HTMLCanvasElement) => {
+    const gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' });
+    if (!gl || (!force && isSoftware(gl))) return canvas.remove();
+
+    const sh = (type: number, src: string) => {
+      const s = gl.createShader(type)!;
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      return s;
+    };
+    const prog = gl.createProgram()!;
+    gl.attachShader(prog, sh(gl.VERTEX_SHADER, VERT));
+    gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FRAG));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return canvas.remove();
+    gl.useProgram(prog);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, 'p');
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const uR = gl.getUniformLocation(prog, 'r');
+    const uT = gl.getUniformLocation(prog, 't');
+
+    const resize = () => {
+      const w = Math.max(1, Math.round(canvas.clientWidth * SCALE));
+      const hgt = Math.max(1, Math.round(canvas.clientHeight * SCALE));
+      if (canvas.width !== w || canvas.height !== hgt) {
+        canvas.width = w;
+        canvas.height = hgt;
+        gl.viewport(0, 0, w, hgt);
+      }
+    };
+    // random phase per canvas so hero and contact don't look identical
+    const offset = Math.random() * 100;
+    const draw = (ms: number) => {
+      resize();
+      gl.uniform2f(uR, canvas.width, canvas.height);
+      gl.uniform1f(uT, offset + ms / 1000);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      canvas.classList.add('is-ready');
+    };
+
+    let raf = 0;
+    let last = 0;
+    let visible = false;
+    const loop = (ms: number) => {
+      raf = requestAnimationFrame(loop);
+      if (ms - last < FRAME_MS) return;
+      last = ms;
+      draw(ms);
+    };
+    const update = () => {
+      cancelAnimationFrame(raf);
+      if (still.matches) draw(0);
+      else if (visible && !document.hidden) raf = requestAnimationFrame(loop);
+    };
+    new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+      update();
+    }).observe(canvas);
+    document.addEventListener('visibilitychange', update);
+    still.addEventListener('change', update);
+    new ResizeObserver(() => still.matches && draw(0)).observe(canvas);
+  };
+
+  const start = () => document.querySelectorAll<HTMLCanvasElement>('canvas.liquid').forEach(init);
+  const idle = (fn: () => void) => ('requestIdleCallback' in window ? requestIdleCallback(fn, { timeout: 2000 }) : setTimeout(fn, 200));
+  if (document.readyState === 'complete') idle(start);
+  else addEventListener('load', () => idle(start), { once: true });
+</script>
+
+<style>
+  .liquid {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+  }
+  .liquid.is-ready {
+    opacity: 1;
+  }
+</style>

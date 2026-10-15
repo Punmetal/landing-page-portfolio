@@ -275,30 +275,13 @@ const fit = (t: string) => Math.max(...t.split(/\s+/).map((w) => w.length), 6) *
   .spine > * {
     position: relative;
   }
+  /* spine type: black ink, debossed into the cloth */
   .spine-no,
   .spine-title {
-    background: var(--foil-grad);
-    background-size: 100% 300%;
-    background-position: 50% var(--foil, 0%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    /* debossed like the cover title */
-    filter: drop-shadow(0 1px 0 rgb(255 255 255 / 0.45)) drop-shadow(0 -1px 0 rgb(0 0 0 / 0.35));
-    animation: foil-v 6s ease-in-out infinite alternate;
-  }
-  /* vertical text: the foil sweeps along the spine */
-  .spine-title {
-    background-size: 100% 250%;
-  }
-  @keyframes foil-v {
-    to {
-      background-position: 50% 100%;
-    }
-  }
-  .book-link:hover .spine-no,
-  .book-link:hover .spine-title {
-    animation-play-state: paused;
+    color: var(--ink);
+    text-shadow:
+      0 1px 0 rgb(255 255 255 / 0.4),
+      0 -1px 0 rgb(0 0 0 / 0.3);
   }
   .spine-no {
     font-family: var(--f-display);
@@ -521,10 +504,6 @@ const fit = (t: string) => Math.max(...t.split(/\s+/).map((w) => w.length), 6) *
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .spine-no,
-    .spine-title {
-      animation: none;
-    }
     .book,
     .book::after,
     .book-link,
