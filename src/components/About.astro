@@ -26,6 +26,9 @@ const [intro, ...rest] = profile.about;
 
 <style>
   .about {
+    /* stop the card's sway from causing horizontal scroll, without clipping
+       its shadow at the column edge (clip on one axis keeps y visible) */
+    overflow-x: clip;
     display: grid;
     max-width: calc(var(--max-w) + var(--gutter) * 2);
     margin-inline: auto;
@@ -34,7 +37,6 @@ const [intro, ...rest] = profile.about;
     display: grid;
     justify-items: center;
     align-content: start;
-    overflow: hidden; /* sway never causes horizontal scroll */
     padding-bottom: 48px;
   }
   .about-body {
