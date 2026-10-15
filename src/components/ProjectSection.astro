@@ -1,0 +1,106 @@
+---
+import type { Project } from '../data/projects';
+import MediaGrid from './MediaGrid.astro';
+import ToolChips from './ToolChips.astro';
+import Palette from './Palette.astro';
+
+interface Props {
+  project: Project;
+}
+const { project: p } = Astro.props;
+const titleId = `${p.slug}-title`;
+---
+
+<article class="project container" id={p.slug} aria-labelledby={titleId}>
+  <div class="info">
+    <div class="info-inner">
+      <p class="no display" aria-hidden="true">{p.no}</p>
+      <h3 id={titleId} class="title display">
+        <span class="visually-hidden">Project {p.no}: </span>{p.title}
+      </h3>
+
+      <h4>Description</h4>
+      {
+        Array.isArray(p.description) ? (
+          <ul class="bullets">
+            {p.description.map((d) => (
+              <li>{d}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>{p.description}</p>
+        )
+      }
+
+      <h4>My Role</h4>
+      <ul class="bullets">{p.role.map((r) => <li>{r}</li>)}</ul>
+
+      <h4>Tools &amp; Software</h4>
+      <ToolChips ids={p.tools} />
+
+      {p.palette && <Palette swatches={p.palette} />}
+    </div>
+  </div>
+
+  <div class="work">
+    <MediaGrid media={p.media} />
+  </div>
+</article>
+
+<style>
+  .project {
+    display: grid;
+    gap: clamp(28px, 4vw, 56px);
+    padding-block: clamp(56px, 8vw, 112px);
+    border-top: 1px solid var(--c-line);
+  }
+  .info-inner {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+  }
+  .info .no {
+    font-size: clamp(4rem, 3rem + 5vw, 7.5rem);
+    color: var(--c-accent);
+    line-height: 0.8;
+  }
+  .title {
+    font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.75rem);
+    line-height: 0.95;
+    margin-bottom: 12px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--c-line);
+    overflow-wrap: break-word;
+  }
+  h4 {
+    margin: 14px 0 0;
+    color: var(--c-accent);
+    font-size: var(--fs-2);
+    font-weight: 700;
+  }
+  .info p,
+  .bullets {
+    color: #d8d8d8;
+  }
+  .bullets {
+    margin: 0;
+    padding-left: 1.2em;
+  }
+  .bullets li + li {
+    margin-top: 4px;
+  }
+  .info :global(.palette) {
+    margin-top: 20px;
+  }
+
+  @media (min-width: 960px) {
+    .project {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+      align-items: start;
+    }
+    .info-inner {
+      position: sticky;
+      top: 24px;
+    }
+  }
+</style>

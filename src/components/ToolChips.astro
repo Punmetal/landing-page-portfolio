@@ -1,0 +1,48 @@
+---
+import { tools, type ToolId } from '../data/site';
+
+interface Props {
+  ids: ToolId[];
+  label?: string;
+}
+const { ids, label = 'Tools & Software' } = Astro.props;
+---
+
+<ul class="tools" role="list" aria-label={label}>
+  {
+    ids.map((id) => (
+      <li>
+        <span class="abbr" aria-hidden="true">{tools[id].abbr}</span>
+        <span class="name">{tools[id].name}</span>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+  }
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px 4px 4px;
+    border: 1.5px solid var(--c-line);
+    border-radius: 10px;
+    font-size: var(--fs-0);
+  }
+  .abbr {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border: 1.5px solid var(--c-fg);
+    border-radius: 7px;
+    font-weight: 700;
+    font-size: 0.8125rem;
+  }
+</style>

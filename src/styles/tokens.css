@@ -18,7 +18,7 @@
   --fs-2: 1.125rem;
   --fs-3: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
   --fs-4: clamp(2rem, 1.4rem + 3vw, 3.5rem);
-  --fs-5: clamp(3.5rem, 2rem + 8vw, 8rem);
+  --fs-5: clamp(2.5rem, 0.75rem + 9.5vw, 8rem);
 
   /* Layout */
   --max-w: 1280px;

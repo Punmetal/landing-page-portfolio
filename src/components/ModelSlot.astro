@@ -1,0 +1,79 @@
+---
+// 3D model (Draco-compressed GLB) via <model-viewer>. The model-viewer library
+// is only fetched once the slot scrolls into view; the poster image shows
+// until then. Falls back to a labelled placeholder when no GLB exists.
+import Placeholder from './Placeholder.astro';
+import { hasPublic, posterUrl } from '../lib/media';
+
+interface Props {
+  name: string;
+  label: string;
+  poster?: string;
+}
+const { name, label, poster } = Astro.props;
+const glb = hasPublic(`${name}.glb`);
+const posterSrc = posterUrl(poster);
+---
+
+{
+  glb ? (
+    <div class="model-slot" data-model-slot>
+      <model-viewer
+        src={`/media/${name}.glb`}
+        poster={posterSrc}
+        alt={label}
+        camera-controls
+        auto-rotate
+        interaction-prompt="none"
+        loading="lazy"
+        reveal="auto"
+        shadow-intensity="0.6"
+      >
+        {posterSrc && <img slot="poster" src={posterSrc} alt="" loading="lazy" decoding="async" />}
+      </model-viewer>
+    </div>
+  ) : (
+    <Placeholder kind="3d" label={label} file={`${name}.glb`} />
+  )
+}
+
+<script>
+  const slots = document.querySelectorAll('[data-model-slot]');
+  if (slots.length) {
+    const io = new IntersectionObserver(
+      (entries, obs) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          obs.disconnect();
+          import('@google/model-viewer');
+        }
+      },
+      { rootMargin: '300px 0px' },
+    );
+    slots.forEach((s) => io.observe(s));
+  }
+</script>
+
+<style>
+  .model-slot {
+    aspect-ratio: 1;
+    border-radius: var(--radius);
+    background: radial-gradient(circle at 50% 40%, #2c2c2c, var(--c-bg-raised));
+    overflow: hidden;
+  }
+  model-viewer {
+    display: block;
+    width: 100%;
+    height: 100%;
+    --poster-color: transparent;
+  }
+  model-viewer img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    model-viewer {
+      --auto-rotate: none;
+    }
+  }
+</style>

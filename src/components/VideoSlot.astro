@@ -1,0 +1,71 @@
+---
+// Muted looping video (MP4 + optional WebM) that only starts downloading when
+// scrolled near the viewport. With prefers-reduced-motion it shows controls
+// instead of autoplaying. Falls back to a labelled placeholder.
+import Placeholder from './Placeholder.astro';
+import { hasPublic, imageEntry, posterUrl } from '../lib/media';
+
+interface Props {
+  name: string;
+  label: string;
+  poster?: string;
+}
+const { name, label, poster } = Astro.props;
+const mp4 = hasPublic(`${name}.mp4`);
+const webm = hasPublic(`${name}.webm`);
+const posterSrc = posterUrl(poster);
+const ratio = poster && imageEntry(poster) ? `${imageEntry(poster)!.width} / ${imageEntry(poster)!.height}` : '16 / 9';
+---
+
+{
+  mp4 || webm ? (
+    <video
+      class="lazy-video"
+      muted
+      loop
+      playsinline
+      preload="none"
+      poster={posterSrc}
+      aria-label={label}
+      style={`aspect-ratio: ${ratio}`}
+    >
+      {webm && <source data-src={`/media/${name}.webm`} type="video/webm" />}
+      {mp4 && <source data-src={`/media/${name}.mp4`} type="video/mp4" />}
+    </video>
+  ) : (
+    <Placeholder kind="video" label={label} file={`${name}.mp4`} />
+  )
+}
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const { target, isIntersecting } of entries) {
+        const video = target as HTMLVideoElement;
+        if (isIntersecting) {
+          if (!video.dataset.loaded) {
+            video.querySelectorAll<HTMLSourceElement>('source[data-src]').forEach((s) => (s.src = s.dataset.src!));
+            video.load();
+            video.dataset.loaded = '1';
+          }
+          if (reduce) video.controls = true;
+          else video.play().catch(() => (video.controls = true));
+        } else if (!video.paused) {
+          video.pause();
+        }
+      }
+    },
+    { rootMargin: '200px 0px' },
+  );
+  document.querySelectorAll('video.lazy-video').forEach((v) => io.observe(v));
+</script>
+
+<style>
+  video {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    background: var(--c-bg-raised);
+  }
+</style>

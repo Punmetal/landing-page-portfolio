@@ -2,11 +2,18 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import About from '../components/About.astro';
+import ProjectIndex from '../components/ProjectIndex.astro';
+import ProjectSection from '../components/ProjectSection.astro';
+import { projects } from '../data/projects';
 ---
 
 <Base>
   <Hero />
   <main id="main">
     <About />
+    <ProjectIndex />
+    <section aria-label="Projects">
+      {projects.map((project) => <ProjectSection project={project} />)}
+    </section>
   </main>
 </Base>
