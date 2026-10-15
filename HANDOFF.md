@@ -45,6 +45,12 @@ Vercel preview once the real 2x exports are in (heavier images will cost some Pe
 3. Optional: try Archivo **expanded** width for the wordmark (closer to the cover typography)
 4. Rights confirmation before any public URL (below)
 
+## Design changes after first review
+- Project index is now a CSS 3D **bookshelf** (bright book per project, typographic covers,
+  hover lifts/turns the book, leans toward the cursor; touch = horizontal cover scroller)
+- About photo replaced by a hanging **holographic ID card** (name, "Visual Designer"), foil and
+  glare follow the cursor, idle sway; reduced-motion users get a static card
+
 ## Open questions
 - [ ] Sybil Husky: who is the client / project owner? Notion says "real work" but no name.
 - [ ] OK to show the contact line "Open to Visual, Graphic, Digital and UI / Web design roles."?
@@ -86,6 +92,10 @@ cropped from the 1280px frames (many are only 160–430px wide, so they look sof
 
 **3D (GLB from Blender into `assets-src/3d/`):**
 - `01-k2o-logo.glb` · `07-sybil-card.glb`
+
+**Photo for the holographic ID card:** `Me02.png` on Drive (id `1_x9jgC4qfoyMUA30W29pI1kh7NPckTau`)
+could not be fetched in the cloud session (network policy blocks drive.google.com). Attach it in
+chat or save it as `assets-src/images/about-portrait.png`, then `npm run assets`.
 
 **Other:**
 - Rights confirmation (table above)

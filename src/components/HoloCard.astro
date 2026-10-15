@@ -1,0 +1,326 @@
+---
+// Hanging holographic ID card. Idle: hangs and sways gently from its strap.
+// Hover: the card tilts toward the cursor and the foil (rainbow + scale
+// pattern) and glare follow the pointer like light on a hologram.
+import Picture from './Picture.astro';
+import { profile } from '../data/site';
+
+interface Props {
+  role: string;
+}
+const { role } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<div class="holo-stage">
+  <span class="strap" aria-hidden="true"></span>
+  <div class="holo-swing">
+    <figure class="holo-card" aria-label={`ID card: ${profile.fullName}, ${role}`}>
+      <span class="clip" aria-hidden="true"></span>
+
+      <div class="card-top" aria-hidden="true">
+        <span>Portfolio</span>
+        <span>{year}</span>
+      </div>
+
+      <div class="photo">
+        <Picture name="about-portrait" alt={`Portrait of ${profile.nickname}`} sizes="260px" />
+      </div>
+
+      <figcaption class="card-id">
+        <span class="card-name">{profile.fullName}</span>
+        <span class="card-nick">“{profile.nickname}”</span>
+        <span class="card-role">{role}</span>
+      </figcaption>
+
+      <div class="card-foot" aria-hidden="true">
+        <span class="barcode"></span>
+        <span class="card-mark">PUN</span>
+      </div>
+
+      <span class="foil" aria-hidden="true"></span>
+      <span class="scales" aria-hidden="true"></span>
+      <span class="glare" aria-hidden="true"></span>
+    </figure>
+  </div>
+</div>
+
+<script>
+  const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  document.querySelectorAll<HTMLElement>('.holo-card').forEach((card) => {
+    let raf = 0;
+    card.addEventListener('pointermove', (e) => {
+      if (!fine.matches || still.matches) return;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const r = card.getBoundingClientRect();
+        const x = Math.min(Math.max((e.clientX - r.left) / r.width, 0), 1);
+        const y = Math.min(Math.max((e.clientY - r.top) / r.height, 0), 1);
+        card.style.setProperty('--mx', `${(x * 100).toFixed(1)}%`);
+        card.style.setProperty('--my', `${(y * 100).toFixed(1)}%`);
+        card.style.setProperty('--ry', `${((x - 0.5) * 24).toFixed(2)}deg`);
+        card.style.setProperty('--rx', `${((0.5 - y) * 20).toFixed(2)}deg`);
+        card.style.setProperty('--hyp', Math.hypot(x - 0.5, y - 0.5).toFixed(3));
+        card.classList.add('is-active');
+      });
+    });
+    card.addEventListener('pointerleave', () => {
+      cancelAnimationFrame(raf);
+      card.classList.remove('is-active');
+      ['--mx', '--my', '--rx', '--ry', '--hyp'].forEach((p) => card.style.removeProperty(p));
+    });
+  });
+</script>
+
+<style>
+  .holo-stage {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    padding-top: 120px;
+  }
+  /* lanyard strap from the top of the section to the clip */
+  .strap {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 22px;
+    height: 132px;
+    transform: translateX(-50%);
+    background:
+      repeating-linear-gradient(0deg, rgb(0 0 0 / 0.18) 0 2px, transparent 2px 6px),
+      linear-gradient(90deg, #b5121b, var(--c-accent) 40%, #b5121b);
+    border-radius: 0 0 4px 4px;
+  }
+
+  .holo-swing {
+    /* shadow lives here: the card's notch mask would clip a box-shadow */
+    filter: drop-shadow(0 28px 34px rgb(0 0 0 / 0.55)) drop-shadow(0 6px 10px rgb(0 0 0 / 0.35));
+    transform-origin: 50% -40px;
+    animation: sway 6s ease-in-out infinite;
+  }
+  .holo-stage:hover .holo-swing {
+    animation-play-state: paused;
+  }
+  @keyframes sway {
+    0%,
+    100% {
+      transform: rotate(-1.6deg);
+    }
+    50% {
+      transform: rotate(1.6deg);
+    }
+  }
+
+  .holo-card {
+    --mx: 50%;
+    --my: 50%;
+    --rx: 0deg;
+    --ry: 0deg;
+    --hyp: 0;
+    --radius-card: 20px;
+    position: relative;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: 14px;
+    width: min(300px, 80vw);
+    margin: 0;
+    padding: 30px 22px 18px;
+    border-radius: var(--radius-card);
+    background:
+      radial-gradient(120% 80% at 20% 0%, #ffffff, transparent 60%),
+      linear-gradient(160deg, #f4f4f6, #d9dbe2 55%, #eceef3);
+    color: #141414;
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.8) inset;
+    transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    /* ticket-style notches on both sides */
+    -webkit-mask:
+      radial-gradient(circle 12px at 0 66%, transparent 98%, #000) left / 51% 100% no-repeat,
+      radial-gradient(circle 12px at 100% 66%, transparent 98%, #000) right / 51% 100% no-repeat;
+    mask:
+      radial-gradient(circle 12px at 0 66%, transparent 98%, #000) left / 51% 100% no-repeat,
+      radial-gradient(circle 12px at 100% 66%, transparent 98%, #000) right / 51% 100% no-repeat;
+  }
+  .holo-card.is-active {
+    transition: transform 0.12s linear;
+  }
+
+  /* punched slot for the clip */
+  .clip {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    width: 46px;
+    height: 9px;
+    transform: translateX(-50%);
+    border-radius: 99px;
+    background: #1c1c1c;
+    box-shadow: inset 0 2px 3px rgb(0 0 0 / 0.6);
+  }
+
+  .card-top {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .photo {
+    position: relative;
+    z-index: 2;
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--c-hero);
+  }
+  .photo :global(picture),
+  .photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 18%;
+  }
+  .card-id {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    gap: 2px;
+    align-content: start;
+  }
+  .card-name {
+    font-family: var(--f-display);
+    font-size: 1.3rem;
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+  .card-nick {
+    font-weight: 700;
+    color: #3a3a3a;
+  }
+  .card-role {
+    justify-self: start;
+    margin-top: 8px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: #141414;
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .card-foot {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px dashed rgb(0 0 0 / 0.25);
+  }
+  .barcode {
+    width: 120px;
+    height: 26px;
+    background: repeating-linear-gradient(
+      90deg,
+      #141414 0 2px,
+      transparent 2px 4px,
+      #141414 4px 5px,
+      transparent 5px 8px,
+      #141414 8px 11px,
+      transparent 11px 12px
+    );
+  }
+  .card-mark {
+    font-family: var(--f-display);
+    font-size: 1rem;
+    color: var(--c-accent);
+  }
+
+  /* ---- hologram layers ---- */
+  .foil,
+  .scales,
+  .glare {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  /* rainbow foil: slides with the pointer, under the photo and type */
+  .foil {
+    z-index: 1;
+    background: linear-gradient(
+      115deg,
+      transparent 0%,
+      #ff5fa2 18%,
+      #ffd36b 30%,
+      #7dffb7 42%,
+      #63c8ff 54%,
+      #a77bff 66%,
+      #ff5fa2 78%,
+      transparent 100%
+    );
+    background-size: 260% 260%;
+    background-position: var(--mx) var(--my);
+    opacity: 0.3;
+    transition: opacity 0.4s ease;
+  }
+  /* fish-scale foil pattern, revealed more at steeper angles */
+  .scales {
+    z-index: 1;
+    background:
+      radial-gradient(circle at 50% 0, transparent 9px, rgb(255 255 255 / 0.9) 10px, rgb(0 0 0 / 0.07) 11px, transparent 12.5px) 0 0 / 22px 14px,
+      radial-gradient(circle at 50% 0, transparent 9px, rgb(255 255 255 / 0.9) 10px, rgb(0 0 0 / 0.07) 11px, transparent 12.5px) 11px 7px / 22px 14px;
+    opacity: calc(0.35 + var(--hyp) * 1.2);
+    transition: opacity 0.4s ease;
+  }
+  /* specular glare following the pointer */
+  .glare {
+    z-index: 4;
+    background: radial-gradient(
+      circle at var(--mx) var(--my),
+      rgb(255 255 255 / 0.5) 0%,
+      rgb(255 255 255 / 0.12) 22%,
+      transparent 48%
+    );
+    mix-blend-mode: soft-light;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  /* light iridescent sheen across the photo */
+  .photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 25%, #ff5fa2 40%, #7dffb7 50%, #63c8ff 60%, transparent 75%);
+    background-size: 260% 260%;
+    background-position: var(--mx) var(--my);
+    mix-blend-mode: overlay;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .holo-card.is-active .photo::after {
+    opacity: 0.35;
+  }
+  .holo-card.is-active .foil {
+    opacity: 0.6;
+  }
+  .holo-card.is-active .glare {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .holo-swing {
+      animation: none;
+    }
+    .holo-card {
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
