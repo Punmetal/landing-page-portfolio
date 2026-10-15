@@ -93,9 +93,6 @@ cropped from the 1280px frames (many are only 160–430px wide, so they look sof
 **3D (GLB from Blender into `assets-src/3d/`):**
 - `01-k2o-logo.glb` · `07-sybil-card.glb`
 
-**Photo for the holographic ID card:** `Me02.png` on Drive (id `1_x9jgC4qfoyMUA30W29pI1kh7NPckTau`)
-could not be fetched in the cloud session (network policy blocks drive.google.com). Attach it in
-chat or save it as `assets-src/images/about-portrait.png`, then `npm run assets`.
 
 **Other:**
 - Rights confirmation (table above)

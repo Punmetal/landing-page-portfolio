@@ -16,7 +16,6 @@ const INSET = 4; // trim rounded-corner edges
 
 // [frame, name, x0, y0, x1, y1] in frame pixels
 const CROPS = [
-  ['1', 'about-portrait', 0, 0, 487, 720],
 
   ['4a', '01-k2o-kv', 325, 45, 668, 472],
   ['4a', '01-k2o-poster-bus', 678, 45, 862, 277],
@@ -96,7 +95,7 @@ for (const [frame, name, x0, y0, x1, y1] of CROPS) {
     delete ledger[name];
     continue;
   }
-  const inset = name === '07-sybil-landing' || name === 'about-portrait' ? 0 : INSET;
+  const inset = name === '07-sybil-landing' ? 0 : INSET;
   await sharp(join(FRAMES, `frame-${frame}.jpg`))
     .extract({
       left: x0 + inset,

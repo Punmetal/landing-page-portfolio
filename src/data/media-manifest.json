@@ -409,10 +409,11 @@
     ]
   },
   "about-portrait": {
-    "width": 487,
-    "height": 720,
+    "width": 960,
+    "height": 960,
     "sizes": [
-      487
+      800,
+      960
     ]
   }
 }
