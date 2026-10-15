@@ -1,0 +1,464 @@
+{
+ "source": "k2o_festival-map_4x5.ai",
+ "width": 2000,
+ "height": 2240,
+ "headline": {
+  "w": 1495,
+  "h": 507
+ },
+ "iconCell": [
+  64,
+  80
+ ],
+ "iconCount": 21,
+ "layers": [
+  {
+   "id": "bg",
+   "name": "map/bg"
+  },
+  {
+   "id": "aw",
+   "name": "aw"
+  },
+  {
+   "id": "pins",
+   "name": "Map pin"
+  },
+  {
+   "id": "exits",
+   "name": "Emergency Exit"
+  },
+  {
+   "id": "sponsors",
+   "name": "K2O sponsors"
+  },
+  {
+   "id": "headline",
+   "name": "headline"
+  }
+ ],
+ "categories": [
+  {
+   "id": "top-up",
+   "label": "Top up",
+   "icon": 0,
+   "kind": "pins",
+   "count": 7
+  },
+  {
+   "id": "first-aid",
+   "label": "First aid",
+   "icon": 1,
+   "kind": "pins",
+   "count": 3
+  },
+  {
+   "id": "food",
+   "label": "Food zone",
+   "icon": 2,
+   "kind": "pins",
+   "count": 2
+  },
+  {
+   "id": "locker",
+   "label": "Locker",
+   "icon": 3,
+   "kind": "pins",
+   "count": 2
+  },
+  {
+   "id": "toilet",
+   "label": "Toilet",
+   "icon": 4,
+   "kind": "pins",
+   "count": 2
+  },
+  {
+   "id": "atm",
+   "label": "ATM",
+   "icon": 5,
+   "kind": "pins",
+   "count": 1
+  },
+  {
+   "id": "mart",
+   "label": "S2O Mart",
+   "icon": 6,
+   "kind": "pins",
+   "count": 1
+  },
+  {
+   "id": "wristband",
+   "label": "Wristband pickup",
+   "icon": 7,
+   "kind": "pins",
+   "count": 1
+  },
+  {
+   "id": "bar",
+   "label": "Bar",
+   "icon": 8,
+   "kind": "pins",
+   "count": 2
+  },
+  {
+   "id": "pickup",
+   "label": "Pick-up / drop off",
+   "icon": 9,
+   "kind": "pins",
+   "count": 1
+  },
+  {
+   "id": "info",
+   "label": "Information",
+   "icon": 10,
+   "kind": "pins",
+   "count": 3
+  },
+  {
+   "id": "media",
+   "label": "Media",
+   "icon": 11,
+   "kind": "pins",
+   "count": 1
+  },
+  {
+   "id": "smoking",
+   "label": "Smoking area",
+   "icon": 12,
+   "kind": "pins",
+   "count": 3
+  },
+  {
+   "id": "charger",
+   "label": "Charger",
+   "icon": 13,
+   "kind": "pins",
+   "count": 3
+  },
+  {
+   "id": "lost-found",
+   "label": "Lost & found",
+   "icon": 14,
+   "kind": "pins",
+   "count": 2
+  },
+  {
+   "id": "meeting",
+   "label": "Meeting point",
+   "icon": 15,
+   "kind": "pins",
+   "count": 2
+  },
+  {
+   "id": "security",
+   "label": "Security",
+   "icon": 16,
+   "kind": "pins",
+   "count": 1
+  },
+  {
+   "id": "help-desk",
+   "label": "Help desk",
+   "icon": 17,
+   "kind": "pins",
+   "count": 1
+  },
+  {
+   "id": "walkway",
+   "label": "Walk way",
+   "icon": 18,
+   "kind": "pins",
+   "count": 1
+  },
+  {
+   "id": "exits",
+   "label": "Emergency exit",
+   "icon": 19,
+   "kind": "layer",
+   "count": 10
+  },
+  {
+   "id": "sponsors",
+   "label": "Sponsors",
+   "icon": 20,
+   "kind": "layer",
+   "count": null
+  }
+ ],
+ "pins": [
+  {
+   "cat": "wristband",
+   "x": 30.225,
+   "y": 16.339,
+   "w": 4.875,
+   "h": 5.76
+  },
+  {
+   "cat": "security",
+   "x": 21.975,
+   "y": 26.049,
+   "w": 2.1,
+   "h": 2.52
+  },
+  {
+   "cat": "info",
+   "x": 26.425,
+   "y": 26.116,
+   "w": 2.0,
+   "h": 2.52
+  },
+  {
+   "cat": "media",
+   "x": 31.05,
+   "y": 26.116,
+   "w": 2.1,
+   "h": 2.484
+  },
+  {
+   "cat": "lost-found",
+   "x": 28.7,
+   "y": 26.138,
+   "w": 2.15,
+   "h": 2.484
+  },
+  {
+   "cat": "locker",
+   "x": 39.85,
+   "y": 28.326,
+   "w": 2.875,
+   "h": 3.528
+  },
+  {
+   "cat": "atm",
+   "x": 20.475,
+   "y": 28.862,
+   "w": 2.15,
+   "h": 2.484
+  },
+  {
+   "cat": "meeting",
+   "x": 31.475,
+   "y": 31.92,
+   "w": 3.5,
+   "h": 4.032
+  },
+  {
+   "cat": "meeting",
+   "x": 13.775,
+   "y": 39.732,
+   "w": 2.15,
+   "h": 2.484
+  },
+  {
+   "cat": "top-up",
+   "x": 55.025,
+   "y": 39.754,
+   "w": 2.0,
+   "h": 2.52
+  },
+  {
+   "cat": "top-up",
+   "x": 74.975,
+   "y": 39.754,
+   "w": 2.0,
+   "h": 2.52
+  },
+  {
+   "cat": "help-desk",
+   "x": 27.2,
+   "y": 47.031,
+   "w": 1.775,
+   "h": 2.16
+  },
+  {
+   "cat": "walkway",
+   "x": 12.675,
+   "y": 47.634,
+   "w": 2.1,
+   "h": 2.484
+  },
+  {
+   "cat": "top-up",
+   "x": 55.025,
+   "y": 48.839,
+   "w": 2.0,
+   "h": 2.52
+  },
+  {
+   "cat": "top-up",
+   "x": 74.975,
+   "y": 48.839,
+   "w": 2.0,
+   "h": 2.52
+  },
+  {
+   "cat": "locker",
+   "x": 37.775,
+   "y": 52.411,
+   "w": 2.05,
+   "h": 2.52
+  },
+  {
+   "cat": "charger",
+   "x": 37.75,
+   "y": 54.442,
+   "w": 1.95,
+   "h": 2.304
+  },
+  {
+   "cat": "lost-found",
+   "x": 37.85,
+   "y": 55.982,
+   "w": 1.85,
+   "h": 2.16
+  },
+  {
+   "cat": "info",
+   "x": 25.725,
+   "y": 56.295,
+   "w": 2.0,
+   "h": 2.52
+  },
+  {
+   "cat": "bar",
+   "x": 50.95,
+   "y": 58.594,
+   "w": 2.05,
+   "h": 2.52
+  },
+  {
+   "cat": "top-up",
+   "x": 25.7,
+   "y": 60.58,
+   "w": 2.0,
+   "h": 2.52
+  },
+  {
+   "cat": "top-up",
+   "x": 50.95,
+   "y": 60.893,
+   "w": 2.0,
+   "h": 2.52
+  },
+  {
+   "cat": "first-aid",
+   "x": 79.025,
+   "y": 61.339,
+   "w": 1.825,
+   "h": 2.16
+  },
+  {
+   "cat": "pickup",
+   "x": 11.925,
+   "y": 61.406,
+   "w": 3.8,
+   "h": 4.5
+  },
+  {
+   "cat": "food",
+   "x": 41.45,
+   "y": 63.571,
+   "w": 2.375,
+   "h": 2.988
+  },
+  {
+   "cat": "first-aid",
+   "x": 47.025,
+   "y": 63.884,
+   "w": 1.825,
+   "h": 2.16
+  },
+  {
+   "cat": "toilet",
+   "x": 84.125,
+   "y": 64.509,
+   "w": 3.5,
+   "h": 4.356
+  },
+  {
+   "cat": "mart",
+   "x": 25.725,
+   "y": 65.826,
+   "w": 2.15,
+   "h": 2.484
+  },
+  {
+   "cat": "info",
+   "x": 53.075,
+   "y": 66.362,
+   "w": 2.0,
+   "h": 2.52
+  },
+  {
+   "cat": "first-aid",
+   "x": 25.775,
+   "y": 67.701,
+   "w": 2.1,
+   "h": 2.484
+  },
+  {
+   "cat": "charger",
+   "x": 25.675,
+   "y": 69.71,
+   "w": 2.1,
+   "h": 2.484
+  },
+  {
+   "cat": "smoking",
+   "x": 73.8,
+   "y": 70.357,
+   "w": 2.05,
+   "h": 2.52
+  },
+  {
+   "cat": "bar",
+   "x": 69.55,
+   "y": 70.737,
+   "w": 2.425,
+   "h": 2.988
+  },
+  {
+   "cat": "top-up",
+   "x": 65.45,
+   "y": 72.857,
+   "w": 2.0,
+   "h": 2.52
+  },
+  {
+   "cat": "toilet",
+   "x": 53.4,
+   "y": 73.304,
+   "w": 3.5,
+   "h": 4.356
+  },
+  {
+   "cat": "smoking",
+   "x": 63.15,
+   "y": 73.438,
+   "w": 2.05,
+   "h": 2.52
+  },
+  {
+   "cat": "charger",
+   "x": 43.525,
+   "y": 76.853,
+   "w": 2.1,
+   "h": 2.484
+  },
+  {
+   "cat": "food",
+   "x": 37.275,
+   "y": 77.946,
+   "w": 2.375,
+   "h": 2.988
+  },
+  {
+   "cat": "smoking",
+   "x": 44.4,
+   "y": 79.174,
+   "w": 2.05,
+   "h": 2.52
+  }
+ ]
+}

@@ -1,6 +1,6 @@
 # HANDOFF
 
-_Last updated: 2026-10-15 (cloud session, K2O 3D logo baked). Branch: `claude/amazing-gauss-wbx2iv`. Nothing merged to `main` yet._
+_Last updated: 2026-10-15 (cloud session, K2O interactive festival map). Branch: `claude/amazing-gauss-wbx2iv`. Nothing merged to `main` yet._
 
 ## Status
 
@@ -86,7 +86,21 @@ Vercel preview once the real 2x exports are in (heavier images will cost some Pe
 - Draco decoder is self-hosted (`public/draco/`, copied from three.js on dev/build): model-viewer
   no longer calls www.gstatic.com
 
+- **K2O interactive festival map** replaces the teaser-video slot (slide "Festival map & 3D").
+  Built from Pun's layered `k2o_festival-map_4x5.ai` by `scripts/map/build-k2o-map.py`
+  (`npm run assets:map`, needs Python + pymupdf/opencv/scipy/pillow): each Illustrator layer is
+  rendered on its own, the headline moves to the side panel, and the 39 map pins are found and
+  classified by template-matching them against the map's own legend (19 types, all checked by eye).
+  One navy "e" pin is not in the legend, so it is left out instead of guessed.
+  Features: layer slider that rebuilds the map in the file's layer order (plays once on scroll),
+  legend hover/tap lights up every pin of that type (or the exit / sponsor layer), pin tooltips,
+  full screen with zoom + pan (wheel, drag, pinch, +/-). Only names from the legend are shown;
+  no invented zone info.
+  The K2O teaser video slot was removed with it; if the teaser arrives later it needs a new place.
+
 ## Open questions
+- [ ] K2O page 2 still shows the static festival map stand-in (`01-k2o-map`). Keep it next to the
+      interactive one, or replace that box with something else?
 - [ ] Sybil Husky: who is the client / project owner? Notion says "real work" but no name.
 - [ ] OK to show the contact line "Open to Visual, Graphic, Digital and UI / Web design roles."?
       (taken from Career Goals in Notion)
@@ -98,7 +112,7 @@ Vercel preview once the real 2x exports are in (heavier images will cost some Pe
 ## [CHECK RIGHTS] — confirm before publishing publicly
 | Project | Client / owner | Notes |
 | --- | --- | --- |
-| 01 K2O Songkran Music Festival | S2O Festival | Artist photos (BUS, DAOU, FIFTY FIFTY, KISS OF LIFE, LNGSHOT, RIIZE), sponsor logos |
+| 01 K2O Songkran Music Festival | S2O Festival | Artist photos (BUS, DAOU, FIFTY FIFTY, KISS OF LIFE, LNGSHOT, RIIZE), sponsor logos; interactive festival map (sponsor and media-partner logos, venue layout) |
 | 02 Startup Standup Comedy | Enter to Start | Event KV with Crypto Meetup Thailand logo, speaker photos |
 | 03 Thumbnails & Posters | MollageBKK / Netflix Thailand | Netflix branding, talent photos, MasterChef Thailand |
 | 04 Visual Content Design | Enter to Start | Includes one **Binance TH** post (FIFA World Cup game) |
@@ -123,7 +137,7 @@ cropped from the 1280px frames (many are only 160–430px wide, so they look sof
 - 07: `07-sybil-{logo,environment,tiers,landing}`
 
 **Video (MOV/MP4 into `assets-src/video/`):**
-- `01-k2o-teaser` · `02-standup-motion` · `06-16p-flip` (book flip-through) · `07-sybil-prototype`
+- ~~`01-k2o-teaser`~~ (slot replaced by the interactive map) · `02-standup-motion` · `06-16p-flip` (book flip-through) · `07-sybil-prototype`
 
 **3D (GLB from Blender into `assets-src/3d/`):**
 - ~~`01-k2o-logo.glb`~~ done: baked from `K2O_Logo_001.blend` (see below)

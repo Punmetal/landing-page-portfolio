@@ -1,0 +1,780 @@
+---
+// Interactive K2O festival map, built from the layers of Pun's Illustrator
+// file (scripts/map/build-k2o-map.py writes the images and k2o-map.json).
+//   - layer slider: rebuilds the map layer by layer, in the file's own order
+//     (plays once when the map scrolls into view)
+//   - legend: hover/focus previews, click locks; the matching pins light up
+//     above a veil (a clipped copy of the pin layer, so the pixels are Pun's)
+//   - pins: hover/tap shows what each one is
+//   - full screen: zoom and pan (wheel, drag, pinch, +/- buttons)
+import Placeholder from './Placeholder.astro';
+import { hasPublic } from '../lib/media';
+import data from '../data/k2o-map.json';
+
+interface Props {
+  name: string; // media prefix, e.g. 01-k2o-map
+  label: string;
+}
+const { name, label } = Astro.props;
+const ready = hasPublic(`${name}-aw-1200.webp`);
+const src = (layer: string) => ({
+  src: `/media/${name}-${layer}-1200.webp`,
+  srcset: `/media/${name}-${layer}-1200.webp 1200w, /media/${name}-${layer}-2400.webp 2400w`,
+});
+const mapLayers = data.layers.filter((l) => l.id !== 'headline');
+const steps = data.layers.length; // the headline (last layer) lives in the panel
+const uid = `fm-${name}`;
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+{
+  ready ? (
+    <div class="fmap" data-fmap data-steps={steps} style={`--ar:${data.width} / ${data.height}; --ar-n:${+(data.width / data.height).toFixed(4)}; --icons:${data.iconCount}; --icon-sheet:url(/media/${name}-icons.webp)`}>
+      <div class="fm-stage" data-stage>
+        <div class="fm-view" data-view role="img" aria-label={label}>
+          {mapLayers.map((l, i) => (
+            <img
+              class={`fm-layer fm-${l.id}`}
+              data-step={i + 1}
+              {...src(l.id)}
+              sizes="(min-width: 1200px) 42vw, 100vw"
+              width="1200"
+              height={Math.round((1200 * data.height) / data.width)}
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
+          ))}
+          <div class="fm-veil" aria-hidden="true" />
+          <img class="fm-top fm-top-pins" {...src('pins')} sizes="(min-width: 1200px) 42vw, 100vw" alt="" loading="lazy" decoding="async" style={`clip-path:url(#${uid}-clip)`} />
+          <img class="fm-top fm-top-exits" {...src('exits')} sizes="(min-width: 1200px) 42vw, 100vw" alt="" loading="lazy" decoding="async" />
+          <img class="fm-top fm-top-sponsors" {...src('sponsors')} sizes="(min-width: 1200px) 42vw, 100vw" alt="" loading="lazy" decoding="async" />
+          <div class="fm-hits" aria-hidden="true">
+            {data.pins.map((p) => (
+              <button
+                type="button"
+                class="fm-hit"
+                tabindex="-1"
+                data-cat={p.cat}
+                style={`left:${p.x}%;top:${p.y}%;width:${p.w}%;height:${p.h}%`}
+              />
+            ))}
+          </div>
+        </div>
+        <div class="fm-tip" data-tip hidden />
+        <div class="fm-tools">
+          <button type="button" class="fm-btn fm-zoom-btn" data-zoom-in aria-label="Zoom in">+</button>
+          <button type="button" class="fm-btn fm-zoom-btn" data-zoom-out aria-label="Zoom out">−</button>
+          <button type="button" class="fm-btn" data-expand aria-label="Open the map full screen">
+            <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M3 8V3h5M12 3h5v5M17 12v5h-5M8 17H3v-5" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+          </button>
+          <button type="button" class="fm-btn" data-close aria-label="Close full screen">×</button>
+        </div>
+        <svg class="fm-defs" width="0" height="0" aria-hidden="true">
+          <clipPath id={`${uid}-clip`} clipPathUnits="objectBoundingBox" data-clip />
+        </svg>
+      </div>
+
+      <div class="fm-panel">
+        <img
+          class="fm-headline"
+          src={`/media/${name}-headline-480.webp`}
+          srcset={`/media/${name}-headline-480.webp 480w, /media/${name}-headline-960.webp 960w`}
+          sizes="(min-width: 1200px) 26vw, 90vw"
+          width={data.headline.w}
+          height={data.headline.h}
+          alt="K2O Songkran Music Festival, Festival Map. 14 April 2026, S2O Land. www.k2ofestival.com, all ages"
+          loading="lazy"
+          decoding="async"
+          data-step={steps}
+        />
+
+        <div class="fm-build">
+          <div class="fm-build-head">
+            <span class="fm-kicker">Layers</span>
+            <span class="fm-step" aria-hidden="true">
+              <b data-step-no>{pad(steps)}</b>/{pad(steps)} <code data-step-name>{data.layers[steps - 1].name}</code>
+            </span>
+            <button type="button" class="fm-replay" data-replay aria-label="Replay the layer build">
+              <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M4 10a6 6 0 1 0 2-4.5M4 3v3h3" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+            </button>
+          </div>
+          <input
+            type="range"
+            min="1"
+            max={steps}
+            value={steps}
+            step="1"
+            data-range
+            aria-label="Map layers shown"
+            aria-valuetext={`${steps} of ${steps}: ${data.layers[steps - 1].name}`}
+          />
+          <ol class="fm-ticks" aria-hidden="true">
+            {data.layers.map((_, i) => <li>{pad(i + 1)}</li>)}
+          </ol>
+        </div>
+
+        <div class="fm-legend">
+          <p class="fm-kicker" id={`${uid}-legend`}>Legend</p>
+          <ul role="list" aria-labelledby={`${uid}-legend`}>
+            {data.categories.map((c) => (
+              <li>
+                <button type="button" class="fm-key" data-key={c.id} data-kind={c.kind} aria-pressed="false">
+                  <span class="fm-ico" style={`--i:${c.icon}`} aria-hidden="true" />
+                  <span class="fm-name">{c.label}</span>
+                  {c.count != null && <span class="fm-count">{c.count}</span>}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <p class="fm-hint">Hover or tap a legend item to find it on the map.</p>
+        </div>
+      </div>
+
+      <dialog class="fm-dialog" data-dialog aria-label={label} />
+    </div>
+  ) : (
+    <Placeholder kind="image" label={label} file={`${name}-*.webp`} />
+  )
+}
+
+<script>
+  type Cat = { id: string; label: string; kind: string };
+  import data from '../data/k2o-map.json';
+
+  const labels = new Map((data.categories as Cat[]).map((c) => [c.id, c.label]));
+  const kinds = new Map((data.categories as Cat[]).map((c) => [c.id, c.kind]));
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll<HTMLElement>('[data-fmap]').forEach((root) => {
+    const $ = <T extends Element = HTMLElement>(s: string) => root.querySelector<T>(s)!;
+    const stage = $('[data-stage]');
+    const view = $('[data-view]');
+    const tip = $('[data-tip]');
+    const clip = $<SVGClipPathElement>('[data-clip]');
+    const range = $<HTMLInputElement>('[data-range]');
+    const stepNo = $('[data-step-no]');
+    const stepName = $('[data-step-name]');
+    const dialog = $<HTMLDialogElement>('[data-dialog]');
+    const keys = [...root.querySelectorAll<HTMLButtonElement>('[data-key]')];
+    const hits = [...root.querySelectorAll<HTMLButtonElement>('.fm-hit')];
+    const stepped = [...root.querySelectorAll<HTMLElement>('[data-step]')];
+    const steps = Number(root.dataset.steps);
+
+    // ---------- layer build ----------
+    let playTimer = 0;
+    const setStep = (n: number) => {
+      range.value = String(n);
+      stepped.forEach((el) => el.classList.toggle('is-off', Number(el.dataset.step) > n));
+      root.classList.toggle('no-pins', n < 3);
+      const name = data.layers[n - 1].name;
+      stepNo.textContent = String(n).padStart(2, '0');
+      stepName.textContent = name;
+      range.setAttribute('aria-valuetext', `${n} of ${steps}: ${name}`);
+    };
+    const play = () => {
+      clearInterval(playTimer);
+      let n = 1;
+      setStep(n);
+      playTimer = window.setInterval(() => {
+        setStep(++n);
+        if (n >= steps) clearInterval(playTimer);
+      }, 650);
+    };
+    range.addEventListener('input', () => {
+      clearInterval(playTimer);
+      setStep(Number(range.value));
+    });
+    $('[data-replay]').addEventListener('click', play);
+    if (!reduce) {
+      new IntersectionObserver(
+        ([e], o) => {
+          if (!e.isIntersecting) return;
+          o.disconnect();
+          play();
+        },
+        { threshold: 0.45 },
+      ).observe(stage);
+    }
+
+    // ---------- focus a category ----------
+    let locked: string | null = null;
+    const show = (cat: string | null) => {
+      if (cat && Number(range.value) < steps) setStep(steps);
+      if (cat) {
+        root.dataset.focus = cat;
+        root.dataset.focusKind = kinds.get(cat) ?? '';
+      } else {
+        delete root.dataset.focus;
+        delete root.dataset.focusKind;
+      }
+      keys.forEach((k) => k.classList.toggle('is-lit', k.dataset.key === cat));
+      hits.forEach((h) => h.classList.toggle('is-lit', h.dataset.cat === cat));
+      // clip the top copy of the pin layer to the chosen pins (padded for the glow)
+      clip.replaceChildren(
+        ...data.pins
+          .filter((p) => p.cat === cat)
+          .map((p) => {
+            const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            const px = p.w * 0.35;
+            const py = p.h * 0.2;
+            r.setAttribute('x', String((p.x - px) / 100));
+            r.setAttribute('y', String((p.y - py) / 100));
+            r.setAttribute('width', String((p.w + px * 2) / 100));
+            r.setAttribute('height', String((p.h + py * 2) / 100));
+            return r;
+          }),
+      );
+    };
+    const lock = (cat: string | null) => {
+      locked = locked === cat ? null : cat;
+      keys.forEach((k) => k.setAttribute('aria-pressed', String(k.dataset.key === locked)));
+      show(locked);
+    };
+    keys.forEach((k) => {
+      const cat = k.dataset.key!;
+      k.addEventListener('pointerenter', (e) => e.pointerType === 'mouse' && show(cat));
+      k.addEventListener('pointerleave', (e) => e.pointerType === 'mouse' && show(locked));
+      k.addEventListener('focus', () => show(cat));
+      k.addEventListener('blur', () => show(locked));
+      k.addEventListener('click', () => lock(cat));
+    });
+    root.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && locked && !dialog.open) lock(locked);
+    });
+
+    // ---------- pin tooltips ----------
+    const placeTip = (h: HTMLElement) => {
+      const s = stage.getBoundingClientRect();
+      const r = h.getBoundingClientRect();
+      tip.textContent = labels.get(h.dataset.cat!) ?? '';
+      tip.hidden = false;
+      tip.style.left = `${r.left + r.width / 2 - s.left}px`;
+      tip.style.top = `${r.top - s.top}px`;
+    };
+    hits.forEach((h) => {
+      h.addEventListener('pointerenter', (e) => {
+        if (e.pointerType !== 'mouse') return;
+        placeTip(h);
+        show(h.dataset.cat!);
+      });
+      h.addEventListener('pointerleave', (e) => {
+        if (e.pointerType !== 'mouse') return;
+        tip.hidden = true;
+        show(locked);
+      });
+      h.addEventListener('click', () => {
+        if (dragged) return;
+        placeTip(h);
+        lock(h.dataset.cat!);
+        if (!locked) tip.hidden = true;
+      });
+    });
+
+    // ---------- full screen, zoom and pan ----------
+    let s = 1;
+    let tx = 0;
+    let ty = 0;
+    let dragged = false;
+    const apply = () => {
+      const w = view.offsetWidth;
+      const h = view.offsetHeight;
+      s = Math.min(5, Math.max(1, s));
+      tx = Math.min(0, Math.max(w - w * s, tx));
+      ty = Math.min(0, Math.max(h - h * s, ty));
+      view.style.transform = s === 1 ? '' : `translate(${tx}px, ${ty}px) scale(${s})`;
+      root.classList.toggle('is-zoomed', s > 1);
+      tip.hidden = true;
+    };
+    const zoomAt = (f: number, px: number, py: number) => {
+      const ns = Math.min(5, Math.max(1, s * f));
+      tx = px - (px - tx) * (ns / s);
+      ty = py - (py - ty) * (ns / s);
+      s = ns;
+      apply();
+    };
+    // screen point -> point in the view's untransformed box (the space tx/ty live in)
+    const local = (cx: number, cy: number): [number, number] => {
+      const r = view.getBoundingClientRect(); // already moved by tx/ty
+      return [cx - r.left + tx, cy - r.top + ty];
+    };
+    const center = () => [view.offsetWidth / 2, view.offsetHeight / 2] as const;
+    $('[data-zoom-in]').addEventListener('click', () => zoomAt(1.5, ...center()));
+    $('[data-zoom-out]').addEventListener('click', () => zoomAt(1 / 1.5, ...center()));
+
+    const isFull = () => root.classList.contains('is-full');
+    stage.addEventListener(
+      'wheel',
+      (e) => {
+        if (!isFull()) return;
+        e.preventDefault();
+        zoomAt(Math.exp(-e.deltaY * 0.0015), ...local(e.clientX, e.clientY));
+      },
+      { passive: false },
+    );
+    stage.addEventListener('dblclick', (e) => {
+      if (!isFull() || (e.target as Element).closest('.fm-btn')) return;
+      zoomAt(s > 2.5 ? 1 / s : 2, ...local(e.clientX, e.clientY));
+    });
+    const pts = new Map<number, { x: number; y: number }>();
+    let start = { x: 0, y: 0 };
+    stage.addEventListener('pointerdown', (e) => {
+      if (!isFull() || (e.target as Element).closest('.fm-btn')) return;
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      start = { x: e.clientX, y: e.clientY };
+      dragged = false;
+    });
+    stage.addEventListener('pointermove', (e) => {
+      const prev = pts.get(e.pointerId);
+      if (!prev) return;
+      const cur = { x: e.clientX, y: e.clientY };
+      if (pts.size === 2) {
+        const [a, b] = [...pts.values()];
+        const other = a === prev ? b : a;
+        const d0 = Math.hypot(prev.x - other.x, prev.y - other.y);
+        const d1 = Math.hypot(cur.x - other.x, cur.y - other.y);
+        zoomAt(d1 / d0, ...local((cur.x + other.x) / 2, (cur.y + other.y) / 2));
+        dragged = true;
+      } else if (s > 1) {
+        tx += cur.x - prev.x;
+        ty += cur.y - prev.y;
+        apply();
+      }
+      if (Math.hypot(cur.x - start.x, cur.y - start.y) > 5) {
+        dragged = true;
+        if (!stage.hasPointerCapture(e.pointerId)) stage.setPointerCapture(e.pointerId);
+      }
+      pts.set(e.pointerId, cur);
+    });
+    const up = (e: PointerEvent) => {
+      pts.delete(e.pointerId);
+      setTimeout(() => (dragged = false), 0);
+    };
+    stage.addEventListener('pointerup', up);
+    stage.addEventListener('pointercancel', up);
+
+    // full screen moves the live map into a <dialog> (state stays), and back on close
+    const home = document.createComment('fmap');
+    document.body.append(dialog);
+    const open = () => {
+      root.before(home);
+      dialog.append(root);
+      root.classList.add('is-full');
+      root.querySelectorAll('img').forEach((i) => i.setAttribute('sizes', '100vw'));
+      dialog.showModal();
+      document.documentElement.classList.add('lb-open');
+      $<HTMLButtonElement>('[data-close]').focus();
+    };
+    const close = () => dialog.open && dialog.close();
+    dialog.addEventListener('close', () => {
+      s = 1;
+      apply();
+      root.classList.remove('is-full');
+      home.replaceWith(root);
+      document.documentElement.classList.remove('lb-open');
+      $<HTMLButtonElement>('[data-expand]').focus();
+    });
+    $('[data-expand]').addEventListener('click', open);
+    $('[data-close]').addEventListener('click', close);
+    addEventListener('resize', () => apply());
+  });
+</script>
+
+<style>
+  .fmap {
+    /* colours sampled from the map's own background, fixed in both themes */
+    --fm-bg: #3f000c;
+    --fm-deep: #2a0008;
+    --fm-ink: #fbeff1;
+    --fm-soft: rgb(251 239 241 / 0.7);
+    --fm-line: rgb(255 255 255 / 0.14);
+    --fm-cyan: #00f2ff;
+    --fm-red: #ff0033;
+    --fm-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+    display: grid;
+    background: var(--fm-bg);
+    color: var(--fm-ink);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  /* ---------- map ---------- */
+  .fm-stage {
+    position: relative;
+    aspect-ratio: var(--ar);
+    overflow: hidden;
+    background: var(--fm-bg);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .fm-view {
+    position: absolute;
+    inset: 0;
+    transform-origin: 0 0;
+  }
+  .fm-view img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    pointer-events: none;
+    -webkit-user-drag: none;
+  }
+  .fm-layer {
+    transition:
+      opacity 0.55s ease,
+      transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .fm-layer.is-off {
+    opacity: 0;
+    transform: translateY(-2.5%);
+  }
+  .fm-bg.is-off {
+    transform: none;
+  }
+
+  .fm-veil {
+    position: absolute;
+    inset: 0;
+    background: rgb(24 0 6 / 0.72);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  .fm-top {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    filter: drop-shadow(0 0 0.35em rgb(0 242 255 / 0.85));
+  }
+  .fmap[data-focus] .fm-veil,
+  .fmap[data-focus-kind='pins'] .fm-top-pins,
+  .fmap[data-focus='exits'] .fm-top-exits,
+  .fmap[data-focus='sponsors'] .fm-top-sponsors {
+    opacity: 1;
+  }
+
+  .fm-hits {
+    position: absolute;
+    inset: 0;
+  }
+  .fm-hit {
+    position: absolute;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .no-pins .fm-hits {
+    display: none;
+  }
+  /* pulse around the pin head when its category is lit */
+  .fm-hit.is-lit::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 31%;
+    width: 150%;
+    aspect-ratio: 1;
+    border: 2px solid var(--fm-cyan);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: fm-pulse 1.4s ease-out infinite;
+    pointer-events: none;
+  }
+  @keyframes fm-pulse {
+    from {
+      opacity: 0.9;
+      transform: translate(-50%, -50%) scale(0.6);
+    }
+    to {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(1.25);
+    }
+  }
+
+  .fm-tip {
+    position: absolute;
+    z-index: 3;
+    padding: 4px 9px;
+    border-radius: 6px;
+    background: var(--fm-ink);
+    color: var(--fm-deep);
+    font: 700 12px / 1.3 var(--f-body);
+    white-space: nowrap;
+    transform: translate(-50%, calc(-100% - 6px));
+    pointer-events: none;
+  }
+
+  .fm-tools {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 4;
+    display: flex;
+    gap: 6px;
+  }
+  .fm-btn {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--fm-line);
+    border-radius: 10px;
+    background: rgb(42 0 8 / 0.78);
+    backdrop-filter: blur(6px);
+    color: var(--fm-ink);
+    font: 400 22px / 1 var(--f-body);
+    cursor: pointer;
+  }
+  .fm-btn:hover {
+    border-color: var(--fm-cyan);
+    color: var(--fm-cyan);
+  }
+  .fm-btn:focus-visible,
+  .fm-key:focus-visible,
+  .fm-replay:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--fm-deep),
+      0 0 0 4px var(--fm-cyan);
+  }
+  .fm-zoom-btn,
+  [data-close] {
+    display: none;
+  }
+  .fm-defs {
+    position: absolute;
+  }
+
+  /* ---------- panel ---------- */
+  .fm-panel {
+    display: grid;
+    align-content: start;
+    gap: 18px;
+    min-width: 0;
+    padding: 20px;
+    border-top: 1px solid var(--fm-line);
+  }
+  .fm-headline {
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    transition: opacity 0.5s ease;
+  }
+  .fm-headline.is-off {
+    opacity: 0.12;
+  }
+  .fm-kicker {
+    margin: 0;
+    font: 400 12px / 1 var(--f-heading);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--fm-cyan);
+  }
+
+  .fm-build {
+    display: grid;
+    gap: 8px;
+  }
+  .fm-build-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .fm-step {
+    margin-left: auto;
+    font: 12px / 1 var(--fm-mono);
+    color: var(--fm-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .fm-step b {
+    color: var(--fm-ink);
+  }
+  .fm-step code {
+    font: inherit;
+    color: var(--fm-ink);
+  }
+  .fm-replay {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid var(--fm-line);
+    border-radius: 50%;
+    background: none;
+    color: var(--fm-soft);
+    cursor: pointer;
+  }
+  .fm-replay:hover {
+    color: var(--fm-cyan);
+    border-color: var(--fm-cyan);
+  }
+  input[type='range'] {
+    width: 100%;
+    margin: 4px 0 0;
+    accent-color: var(--fm-red);
+  }
+  .fm-ticks {
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font: 10px / 1.2 var(--fm-mono);
+    color: var(--fm-soft);
+  }
+  .fm-ticks li {
+    flex: 1;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fm-ticks li:first-child {
+    text-align: left;
+  }
+  .fm-ticks li:last-child {
+    text-align: right;
+  }
+
+  .fm-legend {
+    display: grid;
+    gap: 10px;
+  }
+  .fm-legend ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 2px 8px;
+    margin: 0;
+    padding: 0;
+  }
+  .fm-key {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 34px;
+    padding: 2px 8px 2px 2px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: none;
+    color: var(--fm-ink);
+    font: 600 13px / 1.2 var(--f-body);
+    text-align: left;
+    cursor: pointer;
+  }
+  .fm-key:hover,
+  .fm-key.is-lit {
+    background: rgb(255 255 255 / 0.07);
+  }
+  .fm-key[aria-pressed='true'] {
+    border-color: var(--fm-cyan);
+  }
+  .fm-ico {
+    flex: none;
+    width: 24px;
+    height: 30px;
+    background: var(--icon-sheet) calc(var(--i) * -24px) 0 / calc(var(--icons) * 24px) 30px no-repeat;
+  }
+  .fm-name {
+    flex: 1;
+    min-width: 0;
+  }
+  .fm-count {
+    font: 12px / 1 var(--fm-mono);
+    color: var(--fm-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .fm-hint {
+    margin: 0;
+    font-size: 12px;
+    color: var(--fm-soft);
+  }
+
+  /* ---------- full screen ---------- */
+  .fm-dialog {
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--fm-bg, #3f000c);
+  }
+  .fm-dialog::backdrop {
+    background: rgb(0 0 0 / 0.6);
+  }
+  .fmap.is-full {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+  }
+  .is-full .fm-stage {
+    aspect-ratio: auto;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    container-type: size;
+    touch-action: none;
+    cursor: grab;
+  }
+  .is-full.is-zoomed .fm-stage:active {
+    cursor: grabbing;
+  }
+  /* largest box of the map's ratio that fits the stage */
+  .is-full .fm-view {
+    position: relative;
+    inset: auto;
+    width: min(100cqw, 100cqh * var(--ar-n));
+    aspect-ratio: var(--ar);
+  }
+  .is-full .fm-panel {
+    overflow-y: auto;
+    border-top: 0;
+    border-left: 1px solid var(--fm-line);
+    padding-top: 64px;
+  }
+  .is-full .fm-zoom-btn,
+  .is-full [data-close] {
+    display: grid;
+  }
+  .is-full [data-expand] {
+    display: none;
+  }
+  @media (max-width: 760px) {
+    .fmap.is-full {
+      grid-template-columns: 1fr;
+      grid-template-rows: minmax(0, 1fr) auto;
+    }
+    .is-full .fm-panel {
+      max-height: 38dvh;
+      padding-top: 16px;
+      border-left: 0;
+      border-top: 1px solid var(--fm-line);
+    }
+    .is-full .fm-headline,
+    .is-full .fm-build {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fm-layer,
+    .fm-veil,
+    .fm-top {
+      transition: none;
+    }
+    .fm-hit.is-lit::before {
+      animation: none;
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+</style>

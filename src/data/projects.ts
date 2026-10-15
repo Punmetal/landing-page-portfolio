@@ -8,6 +8,7 @@ export type Media =
   | { kind: 'image'; name: string; alt: string }
   | { kind: 'video'; name: string; label: string; poster?: string }
   | { kind: 'model'; name: string; label: string; poster?: string }
+  | { kind: 'map'; name: string; label: string } // interactive map (FestivalMap)
   | { kind: 'embed'; provider: 'youtube' | 'vimeo' | 'sketchfab'; id: string; label: string; poster?: string };
 
 export interface Swatch {
@@ -66,7 +67,7 @@ export const projects: Project[] = [
       { kind: 'image', name: '01-k2o-merch-wristband', alt: 'Single K2O fabric festival wristband' },
       { kind: 'image', name: '01-k2o-merch-wristbands', alt: 'Festival wristbands for Owner\'s Box, Artist, Sponsor, Vendor, Re-entry and Influencer' },
       { kind: 'image', name: '01-k2o-map', alt: 'K2O festival map showing main stage, wet zone, entrance and facilities' },
-      { kind: 'video', name: '01-k2o-teaser', label: 'K2O teaser video', poster: '01-k2o-kv' },
+      { kind: 'map', name: '01-k2o-map', label: 'K2O festival map, interactive: main stage, wet zone, speed stage, entrance, food zone and facilities' },
     ],
   },
   {

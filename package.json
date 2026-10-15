@@ -14,7 +14,8 @@
     "assets:standins": "node scripts/make-standins.mjs",
     "assets:textures": "node scripts/make-textures.mjs",
     "assets:video": "bash scripts/optimize-video.sh",
-    "assets:3d": "node scripts/optimize-glb.mjs"
+    "assets:3d": "node scripts/optimize-glb.mjs",
+    "assets:map": "python3 scripts/map/build-k2o-map.py assets-src/map/k2o_festival-map_4x5.ai"
   },
   "dependencies": {
     "@fontsource/archivo-black": "^5.3.0",

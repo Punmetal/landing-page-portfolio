@@ -111,6 +111,24 @@ How media loads:
   The Draco decoder is self-hosted (`scripts/copy-draco.mjs` copies it from three.js into
   `public/draco/` before every `dev`/`build`), so no request goes to Google's CDN.
 
+### Interactive festival map (K2O)
+
+The K2O "Festival map & 3D" slide is built from the layered Illustrator file
+`assets-src/map/k2o_festival-map_4x5.ai` (saved with "Create PDF Compatible File", which keeps
+each layer as a PDF optional-content group):
+
+```bash
+pip install pymupdf opencv-python-headless scipy pillow
+npm run assets:map
+```
+
+`scripts/map/build-k2o-map.py` renders each layer on its own (cropped, WebP at 1200/2400px),
+crops the headline for the side panel, cuts the legend icons into a sprite, and finds + classifies
+every pin by matching it against the legend. Output: `public/media/01-k2o-map-*.webp` and
+`src/data/k2o-map.json` (pin positions in %, categories, layer names), used by
+`src/components/FestivalMap.astro`. If the layer names, the legend position or the artboard
+change, update the constants at the top of the script.
+
 ### Baking a Blender scene for the web
 
 glTF only understands a plain Principled BSDF with image textures. Procedural materials, Layer

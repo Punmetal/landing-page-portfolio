@@ -25,6 +25,9 @@ for (const p of projects) {
     } else if (m.kind === 'model') {
       const ok = existsSync(`public/media/${m.name}.glb`);
       rows.push([p.no, '3d', `${m.name}.glb`, ok ? 'ok' : 'MISSING']);
+    } else if (m.kind === 'map') {
+      const ok = existsSync(`public/media/${m.name}-aw-1200.webp`);
+      rows.push([p.no, 'map', `${m.name}-*.webp`, ok ? 'ok' : 'MISSING (npm run assets:map)']);
     }
   }
 }

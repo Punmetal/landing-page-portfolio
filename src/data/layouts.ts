@@ -153,9 +153,10 @@ export const layouts: Record<string, SlideLayout[]> = {
   ],
 };
 
-/** Page layout for the generated "Motion & 3D" slide (videos / 3D models). */
-export const motionBoxes = (hasVideo: boolean, hasModel: boolean) => ({
+/** Page layout for the generated "Motion & 3D" slide (interactive map / video, 3D model). */
+export const motionBoxes = (hasMain: boolean, hasModel: boolean, isMap = false) => ({
   label: [54, 40, 1226, 92] as Box,
-  video: (hasModel ? [54, 120, 870, 579] : [200, 120, 1080, 615]) as Box,
-  model: (hasVideo ? [890, 120, 1226, 579] : [380, 120, 900, 640]) as Box,
+  // the map is portrait (2000 x 2240) with its panel beside it, so it takes the full height
+  main: (isMap ? (hasModel ? [54, 112, 958, 688] : [140, 112, 1140, 688]) : hasModel ? [54, 120, 870, 579] : [200, 120, 1080, 615]) as Box,
+  model: (isMap ? [978, 112, 1226, 688] : hasMain ? [890, 120, 1226, 579] : [380, 120, 900, 640]) as Box,
 });

@@ -10,6 +10,8 @@ import Picture from './Picture.astro';
 import { posterUrl } from '../lib/media';
 import VideoSlot from './VideoSlot.astro';
 import ModelSlot from './ModelSlot.astro';
+import FestivalMap from './FestivalMap.astro';
+import mapData from '../data/k2o-map.json';
 import ToolChips from './ToolChips.astro';
 import Palette from './Palette.astro';
 
@@ -30,6 +32,7 @@ type Item =
   | { type: 'image'; m: Extract<Media, { kind: 'image' }>; box: Box }
   | { type: 'video'; m: Extract<Media, { kind: 'video' }>; box: Box }
   | { type: 'model'; m: Extract<Media, { kind: 'model' }>; box: Box }
+  | { type: 'map'; m: Extract<Media, { kind: 'map' }>; box: Box }
   | { type: 'palette'; box: Box }
   | { type: 'label'; label: string; sub?: string; box: Box };
 type Slide = { intro: boolean; region: Box; items: Item[] };
@@ -53,17 +56,22 @@ const placed = new Set(slides.flatMap((s) => s.items.flatMap((it) => (it.type ==
 const unplaced = p.media.filter((m) => m.kind === 'image' && !placed.has(m.name));
 if (unplaced.length) throw new Error(`layouts.ts: project ${p.no} images not placed: ${unplaced.map((m) => (m as { name: string }).name).join(', ')}`);
 
-// generated motion page
+// generated motion page: interactive map (or video) + 3D model
 const videos = p.media.filter((m): m is Extract<Media, { kind: 'video' }> => m.kind === 'video');
 const models = p.media.filter((m): m is Extract<Media, { kind: 'model' }> => m.kind === 'model');
-if (videos.length || models.length) {
-  const b = motionBoxes(videos.length > 0, models.length > 0);
+const maps = p.media.filter((m): m is Extract<Media, { kind: 'map' }> => m.kind === 'map');
+if (videos.length || models.length || maps.length) {
+  const b = motionBoxes(videos.length + maps.length > 0, models.length > 0, maps.length > 0);
+  const main: Item[] = maps.length
+    ? [{ type: 'map', m: maps[0], box: b.main }]
+    : videos.slice(0, 1).map((m) => ({ type: 'video' as const, m, box: b.main }));
+  const label = maps.length ? (models.length ? 'Festival map & 3D' : 'Festival map') : models.length && videos.length ? 'Motion & 3D' : models.length ? '3D' : 'Motion';
   slides.push({
     intro: false,
     region: FULL_REGION,
     items: [
-      { type: 'label', label: models.length && videos.length ? 'Motion & 3D' : models.length ? '3D' : 'Motion', box: b.label },
-      ...videos.slice(0, 1).map((m) => ({ type: 'video' as const, m, box: b.video })),
+      { type: 'label', label, box: b.label },
+      ...main,
       ...models.slice(0, 1).map((m) => ({ type: 'model' as const, m, box: b.model })),
     ],
   });
@@ -94,6 +102,8 @@ const place = (box: Box, r: Box) => {
     `--h:${pct(((box[3] - box[1]) / rh) * 100)}`,
   ].join(';');
 };
+// desktop map column: the map's ratio at the box's full height (1cqw = 12.8 frame px)
+const mapCol = (box: Box) => `${+((((box[3] - box[1]) / 1280) * 100 * mapData.width) / mapData.height).toFixed(3)}cqw`;
 // on narrow screens: images wider than ~55% of their page get a full row
 const isWide = (box: Box, r: Box) => (box[2] - box[0]) / (r[2] - r[0]) > 0.55;
 // image sizes hint: box width as a share of a ~1360px slide
@@ -146,7 +156,7 @@ const sizes = (box: Box) => `(min-width: 1200px) ${Math.round(((box[2] - box[0])
           {groupItems(s.items, s.region).map((g) => (
             <div class:list={['group', { cols: !g.alone }]}>
             {g.items.map((it) => (
-            <div class:list={['item', `item-${it.type}`]} style={place(it.box, s.region)}>
+            <div class:list={['item', `item-${it.type}`]} style={place(it.box, s.region) + (it.type === 'map' ? `;--map-col:${mapCol(it.box)}` : '')}>
               {it.type === 'image' &&
                 (posterUrl(it.m.name) ? (
                   <button type="button" class="zoom" data-zoom={posterUrl(it.m.name)} data-zoom-alt={it.m.alt} aria-label={`View larger: ${it.m.alt}`}>
@@ -157,6 +167,7 @@ const sizes = (box: Box) => `(min-width: 1200px) ${Math.round(((box[2] - box[0])
                 ))}
               {it.type === 'video' && <VideoSlot name={it.m.name} label={it.m.label} poster={it.m.poster} />}
               {it.type === 'model' && <ModelSlot name={it.m.name} label={it.m.label} poster={it.m.poster} />}
+              {it.type === 'map' && <FestivalMap name={it.m.name} label={it.m.label} />}
               {it.type === 'palette' && p.palette && (
                 <Palette swatches={p.palette} variant="fill" vertical={it.box[3] - it.box[1] > it.box[2] - it.box[0]} />
               )}
@@ -246,7 +257,7 @@ const sizes = (box: Box) => `(min-width: 1200px) ${Math.round(((box[2] - box[0])
     break-inside: avoid;
     margin-bottom: var(--gap);
   }
-  .item :global(img) {
+  .item:not(.item-map) :global(img) {
     width: 100%;
     border-radius: var(--radius);
     background: var(--c-bg-raised);
@@ -400,7 +411,7 @@ const sizes = (box: Box) => `(min-width: 1200px) ${Math.round(((box[2] - box[0])
     }
     .item .zoom,
     .item :global(picture),
-    .item :global(img),
+    .item:not(.item-map) :global(img),
     .item :global(video),
     .item :global(.model-slot),
     .item :global(.placeholder) {
@@ -409,9 +420,38 @@ const sizes = (box: Box) => `(min-width: 1200px) ${Math.round(((box[2] - box[0])
       max-width: none;
       border-radius: 0.8cqw;
     }
-    .item :global(img),
+    .item:not(.item-map) :global(img),
     .item :global(video) {
       object-fit: cover;
+    }
+    /* map + panel side by side; the map column keeps the map's ratio at full box height */
+    .item-map :global(.fmap) {
+      height: 100%;
+      grid-template-columns: var(--map-col) minmax(0, 1fr);
+      border-radius: 0.8cqw;
+    }
+    .item-map :global(.fm-stage) {
+      height: 100%;
+    }
+    .item-map :global(.fm-panel) {
+      overflow-y: auto;
+      border-top: 0;
+      padding: 1.4cqw 1.4cqw;
+      gap: 1cqw;
+    }
+    .item-map :global(.fm-headline) {
+      max-width: 88%;
+    }
+    .item-map :global(.fm-key) {
+      min-height: 0;
+      padding-block: 1px;
+      font-size: clamp(12px, 0.92cqw, 14px);
+    }
+    .item-map :global(.fm-ico) {
+      width: 20px;
+      height: 25px;
+      background-position: calc(var(--i) * -20px) 0;
+      background-size: calc(var(--icons) * 20px) 25px;
     }
     .item :global(.placeholder) {
       min-height: 0;
