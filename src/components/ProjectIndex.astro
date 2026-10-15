@@ -1,4 +1,8 @@
 ---
+// "Selected work" as a bookshelf. Each project is a 3D book showing its spine;
+// hovering or focusing a book turns it to face the viewer and the others slide
+// aside. Clicking jumps to the project. With no hover (touch screens) the
+// books are shown cover-out in a horizontal scroller.
 import { projects } from '../data/projects';
 import Picture from './Picture.astro';
 ---
@@ -9,18 +13,25 @@ import Picture from './Picture.astro';
     <p class="count"><span>{String(projects.length).padStart(2, '0')}</span> projects</p>
   </div>
 
-  <ol class="cards" role="list">
+  <ol class="shelf" role="list">
     {
       projects.map((p) => (
-        <li>
-          <a class="card" href={`#${p.slug}`}>
-            <div class="thumb">
-              <Picture name={p.cover} alt="" sizes="(min-width: 1100px) 300px, (min-width: 560px) 45vw, 100vw" />
-            </div>
-            <span class="card-no display" aria-hidden="true">
-              {p.no}
+        <li class="book" style={`--spine-bg:${p.spine.bg};--spine-ink:${p.spine.ink}`}>
+          <a class="book-link" href={`#${p.slug}`} aria-label={`${p.no} ${p.title}`}>
+            <span class="book-3d">
+              <span class="spine" aria-hidden="true">
+                <span class="spine-no">{p.no}</span>
+                <span class="spine-title">{p.spine.label}</span>
+                <span class="spine-mark">PUN</span>
+              </span>
+              <span class="cover">
+                <Picture name={p.cover} alt="" sizes="260px" />
+                <span class="cover-text" aria-hidden="true">
+                  <span class="cover-no">{p.no}</span>
+                  <span class="cover-title">{p.indexTitle ?? p.title}</span>
+                </span>
+              </span>
             </span>
-            <span class="card-title">{p.indexTitle ?? p.title}</span>
           </a>
         </li>
       ))
@@ -30,6 +41,9 @@ import Picture from './Picture.astro';
 
 <style>
   .index {
+    --spine-w: 64px;
+    --cover-w: 260px;
+    --book-h: 360px;
     padding-block: var(--section-y);
   }
   .head {
@@ -49,52 +63,223 @@ import Picture from './Picture.astro';
   .count span {
     color: var(--c-fg);
   }
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
-    gap: var(--gap);
+
+  /* ---------- Shelf (hover-capable screens) ---------- */
+  .shelf {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 6px;
     margin: 0;
+    padding: 24px 0 0;
+    perspective: 1800px;
+    position: relative;
   }
-  .card {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    gap: 10px 14px;
+  /* the shelf plank */
+  .shelf::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -14px;
+    height: 14px;
+    border-radius: 2px;
+    background: linear-gradient(#2e2e2e, #1a1a1a);
+    box-shadow: 0 18px 30px rgb(0 0 0 / 0.55);
+  }
+
+  .book {
+    flex: none;
+    width: var(--spine-w);
+    height: var(--book-h);
+    transition: width 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .book-link {
+    display: block;
+    width: 100%;
     height: 100%;
-    padding: 10px 10px 16px;
-    border-radius: calc(var(--radius) + 4px);
-    background: var(--c-bg-raised);
+    color: inherit;
     text-decoration: none;
-    transition: transform 0.25s ease, background-color 0.25s ease;
+    outline: none;
   }
-  .card:hover {
-    transform: translateY(-4px);
-    background: #2b2b2b;
+  .book-3d {
+    position: relative;
+    display: block;
+    width: var(--cover-w);
+    height: 100%;
+    transform-style: preserve-3d;
+    transform-origin: left center;
+    /* at rest: spine faces the viewer, cover runs back into the shelf */
+    transform: translateX(var(--spine-w)) rotateY(90deg);
+    transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
-  .thumb {
-    grid-column: 1 / -1;
-    aspect-ratio: 4 / 3;
-    border-radius: var(--radius);
+
+  .spine,
+  .cover {
+    position: absolute;
+    top: 0;
+    height: 100%;
     overflow: hidden;
-    background: #111;
   }
-  .thumb :global(picture),
-  .thumb :global(img) {
+  .spine {
+    left: calc(var(--spine-w) * -1);
+    width: var(--spine-w);
+    transform-origin: right center;
+    transform: rotateY(-90deg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0 14px;
+    background:
+      linear-gradient(90deg, rgb(255 255 255 / 0.1), transparent 30%, transparent 70%, rgb(0 0 0 / 0.3)),
+      var(--spine-bg);
+    color: var(--spine-ink);
+    border-radius: 3px 0 0 3px;
+  }
+  .spine-no {
+    font-family: var(--f-display);
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+  .spine-title {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    margin-block: 14px;
+    writing-mode: vertical-rl;
+    font-family: var(--f-display);
+    font-size: 1.05rem;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .spine-mark {
+    font-family: var(--f-display);
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+    opacity: 0.8;
+  }
+
+  .cover {
+    left: 0;
+    width: var(--cover-w);
+    background: #111;
+    border-radius: 0 6px 6px 0;
+    box-shadow: 0 24px 40px rgb(0 0 0 / 0.5);
+  }
+  .cover :global(picture),
+  .cover :global(img),
+  .cover :global(.placeholder) {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease;
   }
-  .card:hover .thumb :global(img) {
-    transform: scale(1.04);
+  /* binding crease + gloss */
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(90deg, rgb(0 0 0 / 0.45), rgb(255 255 255 / 0.12) 3%, transparent 8%, transparent 85%, rgb(255 255 255 / 0.06));
+    pointer-events: none;
   }
-  .card-no {
-    padding-left: 6px;
+  .cover-text {
+    position: absolute;
+    inset: auto 0 0 0;
+    z-index: 1;
+    display: grid;
+    gap: 4px;
+    padding: 48px 18px 16px;
+    background: linear-gradient(transparent, rgb(0 0 0 / 0.85));
+    color: #fff;
+  }
+  .cover-no {
+    font-family: var(--f-display);
+    font-size: 1.75rem;
+    line-height: 1;
     color: var(--c-accent);
-    font-size: 2rem;
   }
-  .card-title {
+  .cover-title {
     font-weight: 700;
     line-height: 1.25;
+  }
+
+  /* Open book: hovered/focused one, or the first book when the shelf is idle */
+  .book:hover,
+  .book:focus-within,
+  .shelf:not(:hover):not(:focus-within) .book:first-child {
+    width: calc(var(--cover-w) + 14px);
+  }
+  .book:hover .book-3d,
+  .book:focus-within .book-3d,
+  .shelf:not(:hover):not(:focus-within) .book:first-child .book-3d {
+    /* slight turn so a sliver of the spine stays visible */
+    transform: translateX(14px) rotateY(-10deg) translateY(-8px);
+  }
+  .book-link:focus-visible .cover {
+    box-shadow:
+      0 0 0 3px var(--c-bg),
+      0 0 0 6px #fff,
+      0 24px 40px rgb(0 0 0 / 0.5);
+  }
+
+  @media (max-width: 1100px) {
+    .index {
+      --spine-w: 54px;
+      --cover-w: 230px;
+      --book-h: 320px;
+    }
+    .spine-title {
+      font-size: 0.9rem;
+    }
+  }
+
+  /* ---------- Touch / narrow: covers in a horizontal scroller ---------- */
+  @media (hover: none), (max-width: 760px) {
+    .shelf {
+      justify-content: flex-start;
+      gap: 14px;
+      padding: 8px 0 20px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      overscroll-behavior-x: contain;
+      perspective: none;
+      scrollbar-width: thin;
+    }
+    .shelf::after {
+      display: none;
+    }
+    .book,
+    .book:hover,
+    .book:focus-within,
+    .shelf:not(:hover):not(:focus-within) .book:first-child {
+      width: min(68vw, 240px);
+      height: auto;
+      aspect-ratio: 13 / 18;
+      scroll-snap-align: start;
+    }
+    .book-3d,
+    .book:hover .book-3d,
+    .book:focus-within .book-3d,
+    .shelf:not(:hover):not(:focus-within) .book:first-child .book-3d {
+      width: 100%;
+      transform: none;
+    }
+    .spine {
+      display: none;
+    }
+    .cover {
+      width: 100%;
+      border-radius: 6px;
+      box-shadow: 0 12px 24px rgb(0 0 0 / 0.45);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .book,
+    .book-3d {
+      transition: none;
+    }
   }
 </style>

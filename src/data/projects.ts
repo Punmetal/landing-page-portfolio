@@ -24,7 +24,9 @@ export interface Project {
   role: string[];
   tools: ToolId[];
   palette?: Swatch[];
-  cover: string; // media name used on the index card
+  cover: string; // media name used on the index (book cover)
+  // Bookshelf spine: short label + colors sampled from the project's own work
+  spine: { label: string; bg: string; ink: string };
   media: Media[];
 }
 
@@ -32,6 +34,7 @@ export const projects: Project[] = [
   {
     no: '01',
     slug: 'k2o',
+    spine: { label: 'K2O Songkran', bg: '#051026', ink: '#FF2A3F' },
     title: 'K2O Songkran Music Festival',
     client: 'S2O Festival',
     description:
@@ -69,6 +72,7 @@ export const projects: Project[] = [
   {
     no: '02',
     slug: 'startup-standup',
+    spine: { label: 'Startup Standup', bg: '#003C58', ink: '#FCD700' },
     title: 'Startup Standup Comedy',
     client: 'Enter to Start',
     description:
@@ -99,6 +103,7 @@ export const projects: Project[] = [
   {
     no: '03',
     slug: 'thumbnails-posters',
+    spine: { label: 'Thumbnails & Posters', bg: '#141414', ink: '#FF2A2A' },
     title: 'Thumbnails & Posters',
     client: 'MollageBKK / Netflix Thailand',
     description:
@@ -121,6 +126,7 @@ export const projects: Project[] = [
   {
     no: '04',
     slug: 'visual-content',
+    spine: { label: 'Visual Content', bg: '#3A1C71', ink: '#FFD23F' },
     title: 'Visual Content Design',
     client: 'Enter to Start (includes one Binance TH post)',
     description:
@@ -150,6 +156,7 @@ export const projects: Project[] = [
   {
     no: '05',
     slug: 'infographic',
+    spine: { label: 'Infographic', bg: '#141B2D', ink: '#F5C400' },
     title: 'Infographic',
     client: 'Enter to Start',
     description:
@@ -174,6 +181,7 @@ export const projects: Project[] = [
   {
     no: '06',
     slug: '16-personalities',
+    spine: { label: '16 Personalities', bg: '#F7C64B', ink: '#2B1F3A' },
     title: '16 Personalities Book Design',
     indexTitle: '16 Personalities',
     description:
@@ -206,6 +214,7 @@ export const projects: Project[] = [
   {
     no: '07',
     slug: 'sybil-husky',
+    spine: { label: 'Sybil Husky', bg: '#1A56C8', ink: '#FFFFFF' },
     title: 'Sybil Husky',
     client: '[TODO] confirm client / project owner',
     description: [
