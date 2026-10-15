@@ -70,7 +70,7 @@ export const projects: Project[] = [
   {
     no: '02',
     slug: 'startup-standup',
-    spine: { label: 'Startup Standup', bg: '#00C2CF', ink: '#111111' },
+    spine: { label: 'Startup Standup', bg: '#FF8A1F', ink: '#111111' },
     title: 'Startup Standup Comedy',
     client: 'Enter to Start',
     description:
@@ -100,7 +100,7 @@ export const projects: Project[] = [
   {
     no: '03',
     slug: 'thumbnails-posters',
-    spine: { label: 'Thumbnails & Posters', bg: '#9D6BFF', ink: '#111111' },
+    spine: { label: 'Thumbnails & Posters', bg: '#FFD21F', ink: '#111111' },
     title: 'Thumbnails & Posters',
     client: 'MollageBKK / Netflix Thailand',
     description:
@@ -122,7 +122,7 @@ export const projects: Project[] = [
   {
     no: '04',
     slug: 'visual-content',
-    spine: { label: 'Visual Content', bg: '#1EA7FF', ink: '#111111' },
+    spine: { label: 'Visual Content', bg: '#2BD46B', ink: '#111111' },
     title: 'Visual Content Design',
     client: 'Enter to Start (includes one Binance TH post)',
     description:
@@ -151,7 +151,7 @@ export const projects: Project[] = [
   {
     no: '05',
     slug: 'infographic',
-    spine: { label: 'Infographic', bg: '#2BD46B', ink: '#111111' },
+    spine: { label: 'Infographic', bg: '#00C2CF', ink: '#111111' },
     title: 'Infographic',
     client: 'Enter to Start',
     description:
@@ -175,7 +175,7 @@ export const projects: Project[] = [
   {
     no: '06',
     slug: '16-personalities',
-    spine: { label: '16 Personalities', bg: '#FFD21F', ink: '#111111' },
+    spine: { label: '16 Personalities', bg: '#1EA7FF', ink: '#111111' },
     title: '16 Personalities Book Design',
     indexTitle: '16 Personalities',
     description:
@@ -207,7 +207,7 @@ export const projects: Project[] = [
   {
     no: '07',
     slug: 'sybil-husky',
-    spine: { label: 'Sybil Husky', bg: '#FF5FB0', ink: '#111111' },
+    spine: { label: 'Sybil Husky', bg: '#9D6BFF', ink: '#111111' },
     title: 'Sybil Husky',
     client: '[TODO] confirm client / project owner',
     description: [
