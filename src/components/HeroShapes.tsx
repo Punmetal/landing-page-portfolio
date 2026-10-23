@@ -1,9 +1,11 @@
 // Hero background: ReactDrops Shape Physics on the site red. Component
-// defaults except: twice the figures (count 100), an opaque red background
+// defaults except: twice the figures (count 100), figures 10% smaller (size
+// 45), an opaque red background
 // (the engine repaints its own background every frame, so it cannot be
 // transparent) and its default palette minus the red, which would disappear.
-// The hero text is fed in as static obstacles (a portfolio addition to the
-// engine), so the figures land on, bounce off and pile around the words.
+// The PORTFOLIO wordmark is fed in as static obstacles (a portfolio addition
+// to the engine), so the figures land on, bounce off and pile around it; the
+// rest of the hero text lets them pass.
 // Every element marked [data-shape-obstacle] counts; text is measured line by
 // line so the figures settle into the gaps around the letters' lines.
 // Dragging / click-to-add only with a fine pointer: on touch screens the
@@ -86,11 +88,12 @@ export default function HeroShapes() {
       <ShapePhysics
         ref={shapes}
         count={100}
+        size={45}
         background={heroShapesBackground}
         colors={colors}
         interactive={fine}
         followCursor={fine}
-        aria-label="Playful 3D shapes falling onto the hero text and piling up. With a mouse, drag a shape or click empty space to add one."
+        aria-label="Playful 3D shapes falling onto the PORTFOLIO wordmark and piling up. With a mouse, drag a shape or click empty space to add one."
       />
     </div>
   );

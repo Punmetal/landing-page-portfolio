@@ -108,9 +108,10 @@ Vercel preview once the real 2x exports are in (heavier images will cost some Pe
     contours, grain 0.4). The Contact content is passed as children so hover works over the text.
     Grain needs 2+ `gradientColors`; leave `backgroundImage` unset ("none" drops `gradientColors`)
   - **Shape Physics** = Hero background (`HeroShapes.tsx`): component defaults on the site red,
-    count 100, default palette minus its red. The hero text ([data-shape-obstacle]: wordmark,
-    name, role, CTAs) is fed to the engine as static obstacles, measured line by line, so the
-    figures land on and pile around the words. This is a **modification of the ReactDrops engine**
+    count 100, size 45, default palette minus its red. Only the PORTFOLIO wordmark
+    ([data-shape-obstacle]) is fed to the engine as static obstacles, measured line by line, so the
+    figures land on it and spill past its sides; other hero text lets them pass. The wordmark is
+    ~70% of the container wide (was full width) to leave room at the sides. This is a **modification of the ReactDrops engine**
     (`solid-world.ts`, `solid-engine.ts`, `shape-physics.tsx`, each change commented
     "Portfolio addition"): rounded-rect obstacles collide like the walls, `overlaps()` avoids them,
     capacity excludes their area. Drag / click-to-add only with a mouse (the interactive canvas

@@ -22,13 +22,13 @@ import HeroShapes from './HeroShapes';
     </p>
 
     <div class="hero-intro">
-      <h1 class="hero-name" data-shape-obstacle>
+      <h1 class="hero-name">
         Tutphong <span class="nick">“{profile.nickname}”</span> Mungkalakul
       </h1>
-      <p class="hero-role" data-shape-obstacle>{profile.role}, {profile.direction}</p>
+      <p class="hero-role">{profile.role}, {profile.direction}</p>
       <div class="hero-cta">
-        <a class="btn btn-dark" href="#work" data-shape-obstacle="box">See the work</a>
-        <a class="btn btn-light" href="#contact" data-shape-obstacle="box">Get in touch</a>
+        <a class="btn btn-dark" href="#work">See the work</a>
+        <a class="btn btn-light" href="#contact">Get in touch</a>
       </div>
     </div>
   </div>
@@ -110,9 +110,9 @@ import HeroShapes from './HeroShapes';
     flex-direction: column;
     align-items: center;
     color: var(--c-ink-display);
-    /* "FOLIO" spans the container width */
-    /* "FOLIO" is ~6.5em wide in BBH Bartle: fit it to the container */
-    font-size: min(17.5rem, calc(100cqi / 6.7));
+    /* "FOLIO" is ~6.5em wide in BBH Bartle: sized to ~70% of the container,
+       leaving wide side margins for the hero shapes to fall past */
+    font-size: min(12.5rem, calc(100cqi / 9.3));
     line-height: 0.84;
     letter-spacing: -0.02em;
     text-align: center;
