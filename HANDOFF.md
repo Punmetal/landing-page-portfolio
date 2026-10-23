@@ -98,6 +98,12 @@ Vercel preview once the real 2x exports are in (heavier images will cost some Pe
   no invented zone info.
   The K2O teaser video slot was removed with it; if the teaser arrives later it needs a new place.
 
+- **Contact background = topographic flow**: contour lines over a slowly drifting height field
+  (every 5th line heavier), the cursor raises a hill the lines bend around. Written from scratch
+  as a `variant="topo"` of `LiquidBg` (same GPU check, 30fps, paused off-screen, still frame with
+  reduced motion). Inspired by reactdrops.dev "Topographic Flow" (that site was not reachable from
+  the build environment, so no code was copied). Hero keeps the liquid bands.
+
 ## Open questions
 - [ ] K2O page 2 still shows the static festival map stand-in (`01-k2o-map`). Keep it next to the
       interactive one, or replace that box with something else?
