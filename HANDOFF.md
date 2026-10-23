@@ -102,10 +102,11 @@ Vercel preview once the real 2x exports are in (heavier images will cost some Pe
   `src/components/reactdrops/`, license header kept; ReactDrops Component License 1.0 allows use in
   an end product like this site, not redistribution as a kit). Rendered as React islands
   (`@astrojs/react`, hydrated when visible):
-  - **Topographic Flow** = Contact background (`ContactTopo.tsx`): site red with a two-red elevation
-    gradient, light contours, grain 0.4, ring hover 0.85 / 260px. The Contact content is passed as
-    children so hover still works over the text. Grain needs 2+ `gradientColors` and
-    `backgroundImage` must stay unset ("none" makes the component drop `gradientColors`)
+  - **Topographic Flow** = Contact background (`ContactTopo.tsx`). Two saved settings, switched
+    with `ACTIVE`: `ember` (active: the component's Ember gradient preset, cream contours, grain
+    0.55, flow speed 4, push-away rings hover) and `brandRed` (site red, two-red gradient, light
+    contours, grain 0.4). The Contact content is passed as children so hover works over the text.
+    Grain needs 2+ `gradientColors`; leave `backgroundImage` unset ("none" drops `gradientColors`)
   - **Fan Gallery** above the bookshelf (`FeaturedFan.tsx`, Pun's config; covers of projects 01–05
     linking to each project, stand-in images until the 2x exports arrive)
 
