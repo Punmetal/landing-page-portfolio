@@ -7,17 +7,9 @@
 // it would block the main thread; the static image shows instead.
 // With prefers-reduced-motion it draws a single still frame.
 // Append ?liquid=force to the URL to bypass the GPU check (testing).
-//
-// variant="topo": topographic contour lines over a slowly flowing height
-// field (every 5th line heavier, like a survey map); the cursor raises a
-// hill the lines bend around. Rendered at full resolution so lines stay crisp.
-interface Props {
-  variant?: 'bands' | 'topo';
-}
-const { variant = 'bands' } = Astro.props;
 ---
 
-<canvas class="liquid" data-variant={variant} aria-hidden="true"></canvas>
+<canvas class="liquid" aria-hidden="true"></canvas>
 
 <script>
   const VERT = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
@@ -43,37 +35,6 @@ void main(){
   gl_FragColor=vec4(mix(base,band,s),1.);
 }`;
 
-  // Topographic flow: height = warped fbm drifting over time (+ a hill under
-  // the cursor); contour lines drawn with screen-space derivatives so they stay
-  // ~1px wide at any zoom.
-  const TOPO = `
-#extension GL_OES_standard_derivatives : enable
-precision highp float;
-uniform vec2 r;
-uniform float t;
-uniform vec3 m;
-float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
-float n(vec2 p){vec2 i=floor(p),f=fract(p);vec2 u=f*f*(3.-2.*f);
-  return mix(mix(h(i),h(i+vec2(1,0)),u.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),u.x),u.y);}
-float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<3;i++){v+=a*n(p);p=p*2.02+vec2(1.7,9.2);a*=.5;}return v;}
-float line(float f,float w){float d=abs(fract(f-.5)-.5)/fwidth(f);return 1.-smoothstep(w-.5,w+.5,d);}
-void main(){
-  float s=max(r.x,r.y);
-  vec2 uv=gl_FragCoord.xy/s;
-  vec2 p=uv*1.7;
-  vec2 q=vec2(fbm(p+vec2(0.,t*.03)),fbm(p+vec2(5.2,1.3)-t*.025));
-  float e=fbm(p+1.2*q+vec2(t*.015,0.));
-  vec2 d=(gl_FragCoord.xy-m.xy)/s;
-  e+=m.z*.22*exp(-dot(d,d)*38.);
-  float f=e*16.;
-  float minor=line(f,.6);
-  float major=line(f/5.,.9);
-  vec3 base=vec3(.910,.133,.169);
-  vec3 col=mix(base,vec3(1.,.82,.82),minor*.3);
-  col=mix(col,vec3(1.,.9,.9),major*.42);
-  gl_FragColor=vec4(col,1.);
-}`;
-
   const still = window.matchMedia('(prefers-reduced-motion: reduce)');
   const SCALE = 0.6; // render resolution vs CSS pixels; the bands are soft anyway
   const FRAME_MS = 1000 / 30;
@@ -86,11 +47,8 @@ void main(){
   };
 
   const init = (canvas: HTMLCanvasElement) => {
-    const topo = canvas.dataset.variant === 'topo';
     const gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' });
     if (!gl || (!force && isSoftware(gl))) return canvas.remove();
-    if (topo && !gl.getExtension('OES_standard_derivatives')) return canvas.remove();
-    const scale = topo ? Math.min(devicePixelRatio || 1, 1.5) : SCALE;
 
     const sh = (type: number, src: string) => {
       const s = gl.createShader(type)!;
@@ -100,7 +58,7 @@ void main(){
     };
     const prog = gl.createProgram()!;
     gl.attachShader(prog, sh(gl.VERTEX_SHADER, VERT));
-    gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, topo ? TOPO : FRAG));
+    gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FRAG));
     gl.linkProgram(prog);
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return canvas.remove();
     gl.useProgram(prog);
@@ -112,25 +70,10 @@ void main(){
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
     const uR = gl.getUniformLocation(prog, 'r');
     const uT = gl.getUniformLocation(prog, 't');
-    const uM = gl.getUniformLocation(prog, 'm');
-
-    // cursor hill (topo): eases in/out so the contours swell rather than jump
-    const mouse = { x: 0, y: 0, k: 0, target: 0 };
-    if (topo) {
-      const host = canvas.parentElement!;
-      host.addEventListener('pointermove', (e) => {
-        if (e.pointerType !== 'mouse') return;
-        const b = canvas.getBoundingClientRect();
-        mouse.x = (e.clientX - b.left) * (canvas.width / b.width);
-        mouse.y = (b.bottom - e.clientY) * (canvas.height / b.height);
-        mouse.target = 1;
-      });
-      host.addEventListener('pointerleave', () => (mouse.target = 0));
-    }
 
     const resize = () => {
-      const w = Math.max(1, Math.round(canvas.clientWidth * scale));
-      const hgt = Math.max(1, Math.round(canvas.clientHeight * scale));
+      const w = Math.max(1, Math.round(canvas.clientWidth * SCALE));
+      const hgt = Math.max(1, Math.round(canvas.clientHeight * SCALE));
       if (canvas.width !== w || canvas.height !== hgt) {
         canvas.width = w;
         canvas.height = hgt;
@@ -143,10 +86,6 @@ void main(){
       resize();
       gl.uniform2f(uR, canvas.width, canvas.height);
       gl.uniform1f(uT, offset + ms / 1000);
-      if (uM) {
-        mouse.k += (mouse.target - mouse.k) * 0.08;
-        gl.uniform3f(uM, mouse.x, mouse.y, mouse.k);
-      }
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       canvas.classList.add('is-ready');
     };

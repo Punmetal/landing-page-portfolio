@@ -8,6 +8,22 @@ import { projects } from '../data/projects';
 
 // Cover title is sized from its longest word so nothing touches the label edges.
 const fit = (t: string) => Math.max(...t.split(/\s+/).map((w) => w.length), 6) * 0.82;
+import FeaturedFan from './FeaturedFan';
+import { posterUrl } from '../lib/media';
+// one portrait cover per project for the fan (stand-ins until the 2x exports arrive)
+const fanPicks: [string, string][] = [
+  ['k2o', '01-k2o-kv'],
+  ['startup-standup', '02-standup-kv'],
+  ['thumbnails-posters', '03-thumbs-poster-ice'],
+  ['visual-content', '04-content-post-luck'],
+  ['infographic', '05-info-bitcoin-timeline'],
+];
+const fanItems = fanPicks.flatMap(([slug, name]) => {
+  const p = projects.find((x) => x.slug === slug);
+  const m = p?.media.find((x) => x.kind === 'image' && x.name === name) as { alt: string } | undefined;
+  const src = posterUrl(name);
+  return p && m && src ? [{ src, alt: m.alt, href: `#${p.slug}` }] : [];
+});
 ---
 
 <section class="index container" id="work" aria-labelledby="work-title">
@@ -16,6 +32,7 @@ const fit = (t: string) => Math.max(...t.split(/\s+/).map((w) => w.length), 6) *
     <p class="count"><span>{String(projects.length).padStart(2, '0')}</span> projects</p>
   </div>
 
+  <div class="fan"><FeaturedFan client:visible items={fanItems} /></div>
   <p id="shelf-hint" class="hint">Click a book to open it, click again to see the project.</p>
 
   <ol class="shelf" role="list">
@@ -148,6 +165,9 @@ const fit = (t: string) => Math.max(...t.split(/\s+/).map((w) => w.length), 6) *
   }
   .count span {
     color: var(--c-fg);
+  }
+  .fan {
+    margin-block: clamp(8px, 2vw, 24px) 0;
   }
   .hint {
     margin-bottom: clamp(24px, 4vw, 48px);

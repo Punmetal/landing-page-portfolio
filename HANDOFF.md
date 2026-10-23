@@ -98,11 +98,14 @@ Vercel preview once the real 2x exports are in (heavier images will cost some Pe
   no invented zone info.
   The K2O teaser video slot was removed with it; if the teaser arrives later it needs a new place.
 
-- **Contact background = topographic flow**: contour lines over a slowly drifting height field
-  (every 5th line heavier), the cursor raises a hill the lines bend around. Written from scratch
-  as a `variant="topo"` of `LiquidBg` (same GPU check, 30fps, paused off-screen, still frame with
-  reduced motion). Inspired by reactdrops.dev "Topographic Flow" (that site was not reachable from
-  the build environment, so no code was copied). Hero keeps the liquid bands.
+- **ReactDrops components** (source from Pun's downloaded registry JSON, untouched, in
+  `src/components/reactdrops/`, license header kept; ReactDrops Component License 1.0 allows use in
+  an end product like this site, not redistribution as a kit). Rendered as React islands
+  (`@astrojs/react`, hydrated when visible):
+  - **Topographic Flow** = Contact background (`ContactTopo.tsx`, Pun's config: white paper, black
+    contours, rings hover; grain set to 0.12 because Pun asked for grain while the config said 0)
+  - **Fan Gallery** above the bookshelf (`FeaturedFan.tsx`, Pun's config; covers of projects 01–05
+    linking to each project, stand-in images until the 2x exports arrive)
 
 ## Open questions
 - [ ] K2O page 2 still shows the static festival map stand-in (`01-k2o-map`). Keep it next to the
