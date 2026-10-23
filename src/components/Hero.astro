@@ -1,11 +1,11 @@
 ---
 import { profile } from '../data/site';
 import ThemeToggle from './ThemeToggle.astro';
-import LiquidBg from './LiquidBg.astro';
+import HeroShapes from './HeroShapes';
 ---
 
 <header class="hero">
-  <LiquidBg />
+  <div class="shapes"><HeroShapes client:load /></div>
   <nav class="hero-nav container" aria-label="Primary">
     <a class="brand" href="#top" aria-label="Pun, back to top">PUN</a>
     <ul role="list">
@@ -40,13 +40,28 @@ import LiquidBg from './LiquidBg.astro';
     display: flex;
     flex-direction: column;
     min-height: 100svh;
-    background: var(--c-hero) image-set(url('/media/hero-swirl-1600.webp') 1x, url('/media/hero-swirl-2400.webp') 2x) center / cover;
+    background: var(--c-hero); /* same red as the shapes canvas, shown until it hydrates */
     color: var(--c-ink);
     overflow: hidden;
   }
-  .hero > :not(.liquid) {
+  /* Shape Physics fills the hero behind the content */
+  .shapes {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .hero > :not(.shapes) {
     position: relative;
     z-index: 1;
+  }
+  /* let the pointer through to the shapes except on links and controls */
+  .hero-nav,
+  .hero-body {
+    pointer-events: none;
+  }
+  .hero-nav :is(a, button, label, input),
+  .hero-body :is(a, button) {
+    pointer-events: auto;
   }
 
   .hero-nav {

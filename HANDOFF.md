@@ -107,6 +107,11 @@ Vercel preview once the real 2x exports are in (heavier images will cost some Pe
     0.55, flow speed 4, push-away rings hover) and `brandRed` (site red, two-red gradient, light
     contours, grain 0.4). The Contact content is passed as children so hover works over the text.
     Grain needs 2+ `gradientColors`; leave `backgroundImage` unset ("none" drops `gradientColors`)
+  - **Shape Physics** = Hero background (`HeroShapes.tsx`): component defaults on the site red,
+    default palette minus its red. Drag / click-to-add only with a mouse (the interactive canvas
+    sets touch-action: none, which would block scrolling past the full-height hero on phones).
+    Hero content lets the pointer through except on links/buttons. `LiquidBg.astro` is now unused
+    (kept in case the liquid comes back)
   - **Fan Gallery** above the bookshelf (`FeaturedFan.tsx`, Pun's config; covers of projects 01–05
     linking to each project, stand-in images until the 2x exports arrive)
 
