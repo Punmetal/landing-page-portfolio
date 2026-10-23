@@ -214,7 +214,9 @@ export function createSolidEngine(
     for (const f of figures) if (!f.leaving) area += f.shape.area * f.radius * f.radius;
     return area;
   };
-  const capacity = () => width * height * packing;
+  // Portfolio addition: area covered by obstacles (page text) is not free space.
+  let obstacleArea = 0;
+  const capacity = () => Math.max(0, width * height - obstacleArea) * packing;
   /** Spawning side: 1 falls in from the top, -1 rises from the bottom, 0 appears inside. */
   const side = () => (settings.gravity > 20 ? 1 : settings.gravity < -20 ? -1 : 0);
 
@@ -1164,6 +1166,13 @@ export function createSolidEngine(
 
   return {
     reset,
+    /** Portfolio addition: static obstacles in canvas CSS pixels (see solid-world). */
+    setObstacles(rects: { x: number; y: number; w: number; h: number }[]) {
+      obstacleArea = rects.reduce((sum, r) => sum + r.w * r.h, 0);
+      world.setObstacles(rects);
+      wake();
+      if (!running()) render(true);
+    },
     add() {
       if (motion.matches || settings.paused) {
         const placed = spawnAt(width * (0.15 + random() * 0.7), height * (0.1 + random() * 0.5));

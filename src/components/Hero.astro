@@ -18,17 +18,17 @@ import HeroShapes from './HeroShapes';
 
   <div class="hero-body container" id="top">
     <p class="wordmark display" aria-hidden="true">
-      <span>Port</span><span>folio</span>
+      <span data-shape-obstacle>Port</span><span data-shape-obstacle>folio</span>
     </p>
 
     <div class="hero-intro">
-      <h1 class="hero-name">
+      <h1 class="hero-name" data-shape-obstacle>
         Tutphong <span class="nick">“{profile.nickname}”</span> Mungkalakul
       </h1>
-      <p class="hero-role">{profile.role}, {profile.direction}</p>
+      <p class="hero-role" data-shape-obstacle>{profile.role}, {profile.direction}</p>
       <div class="hero-cta">
-        <a class="btn btn-dark" href="#work">See the work</a>
-        <a class="btn btn-light" href="#contact">Get in touch</a>
+        <a class="btn btn-dark" href="#work" data-shape-obstacle="box">See the work</a>
+        <a class="btn btn-light" href="#contact" data-shape-obstacle="box">Get in touch</a>
       </div>
     </div>
   </div>

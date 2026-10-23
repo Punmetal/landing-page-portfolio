@@ -115,6 +115,8 @@ export type ShapePhysicsHandle = {
   clear: () => void;
   addShape: () => void;
   shake: () => void;
+  /** Portfolio addition: static obstacles in canvas CSS pixels. */
+  setObstacles: (rects: { x: number; y: number; w: number; h: number }[]) => void;
 };
 
 export const ShapePhysics = forwardRef<ShapePhysicsHandle, ShapePhysicsProps>(function ShapePhysics(
@@ -147,6 +149,7 @@ export const ShapePhysics = forwardRef<ShapePhysicsHandle, ShapePhysicsProps>(fu
       clear: () => engine.current?.clear(),
       addShape: () => engine.current?.add(),
       shake: () => engine.current?.shake(),
+      setObstacles: (rects) => engine.current?.setObstacles(rects),
     }),
     [],
   );

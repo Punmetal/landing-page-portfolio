@@ -745,6 +745,9 @@ export function createSolidWorld() {
     height = 0;
   /** Which side is open for spawning: 1 = top (gravity down), -1 = bottom, 0 = none. */
   let spawnSide = 1;
+  // Portfolio addition: static rounded-rectangle obstacles (page text the
+  // figures land on and bounce off). Colliding like walls: manifolds with b = null.
+  let obstacles: SolidPart[] = [];
   let dragged: {
     body: SolidBody;
     localX: number;
@@ -874,6 +877,21 @@ export function createSolidWorld() {
           continue;
         }
         addManifold(m, body, null, key(body, null, i, wall), count);
+      }
+      // Portfolio addition: obstacles use static keys after the four walls.
+      for (let o = 0; o < obstacles.length; o++) {
+        const ob = obstacles[o];
+        const dx = ob.cx - part.cx,
+          dy = ob.cy - part.cy,
+          reach = ob.bound + part.bound + margin;
+        if (dx * dx + dy * dy > reach * reach) continue;
+        const m = take();
+        const count = collideParts(part, ob, margin, m);
+        if (!count) {
+          pool.push(m);
+          continue;
+        }
+        addManifold(m, body, null, key(body, null, i, 4 + o), count);
       }
     }
   }
@@ -1315,6 +1333,33 @@ export function createSolidWorld() {
     get contactCount() {
       return manifolds.length;
     },
+    /**
+     * Portfolio addition: replace the static obstacles (CSS px, container
+     * space). Corners are rounded by `round` so figures roll off them.
+     */
+    setObstacles(rects: { x: number; y: number; w: number; h: number }[], round = 6) {
+      obstacles = rects
+        .filter((r) => r.w > 2 * round && r.h > 2 * round)
+        .map((r) => {
+          const x0 = r.x + round,
+            y0 = r.y + round,
+            x1 = r.x + r.w - round,
+            y1 = r.y + r.h - round;
+          return {
+            // clockwise on screen (y down), outward edge normals
+            x: Float64Array.from([x0, x1, x1, x0]),
+            y: Float64Array.from([y0, y0, y1, y1]),
+            nx: Float64Array.from([0, 1, 0, -1]),
+            ny: Float64Array.from([-1, 0, 1, 0]),
+            count: 4,
+            radius: round,
+            cx: (x0 + x1) / 2,
+            cy: (y0 + y1) / 2,
+            bound: Math.hypot(x1 - x0, y1 - y0) / 2 + round,
+          };
+        });
+      wakeAll();
+    },
     setBounds(nextWidth: number, nextHeight: number, side: number) {
       width = nextWidth;
       height = nextHeight;
@@ -1390,6 +1435,12 @@ export function createSolidWorld() {
       )
         return true;
       const m = scratch;
+      // Portfolio addition: never place a figure inside an obstacle.
+      for (const pa of candidate.parts)
+        for (const ob of obstacles) {
+          const count = collideParts(pa, ob, 0, m);
+          for (let i = 0; i < count; i++) if (m.points[i].separation < -tolerance) return true;
+        }
       for (const body of bodies) {
         if (
           body.minX > candidate.maxX ||
