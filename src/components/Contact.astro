@@ -5,7 +5,7 @@ import ContactTopo from './ContactTopo';
 ---
 
 <section class="contact" id="contact" aria-labelledby="contact-title">
-  <div class="topo"><ContactTopo client:visible /></div>
+  <ContactTopo client:visible>
   <div class="container inner">
     <h2 id="contact-title" class="display big">Let’s<br />talk</h2>
     <p class="lead">Open to Visual, Graphic, Digital and UI / Web design roles.</p>
@@ -20,20 +20,15 @@ import ContactTopo from './ContactTopo';
 
     <p class="foot">© {year} Tutphong Mungkalakul</p>
   </div>
+  </ContactTopo>
 </section>
 
 <style>
   .contact {
     position: relative;
-    /* Topographic Flow paints white paper + black contours; same white before it hydrates */
-    background: #ffffff;
+    /* same red as the Topographic Flow background, shown until it hydrates */
+    background: var(--c-hero);
     color: var(--c-ink);
-  }
-  .topo {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    overflow: hidden;
   }
   .inner {
     position: relative;
@@ -94,6 +89,6 @@ import ContactTopo from './ContactTopo';
     font-weight: 700;
   }
   .contact :focus-visible {
-    box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px #000;
+    box-shadow: 0 0 0 3px var(--c-hero), 0 0 0 6px #000;
   }
 </style>
