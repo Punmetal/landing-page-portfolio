@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import ProjectIndex from '../components/ProjectIndex.astro';
+import ProjectSection from '../components/ProjectSection.astro';
+import Experience from '../components/Experience.astro';
+import Contact from '../components/Contact.astro';
+import StickyNav from '../components/StickyNav.astro';
+import Lightbox from '../components/Lightbox.astro';
+import { projects } from '../data/projects';
+---
+
+<Base>
+  <StickyNav />
+  <Hero />
+  <main id="main">
+    <About />
+    <Experience />
+    <ProjectIndex />
+    <section aria-label="Projects">
+      {projects.map((project) => <ProjectSection project={project} />)}
+    </section>
+    <Contact />
+  </main>
+  <Lightbox />
+</Base>

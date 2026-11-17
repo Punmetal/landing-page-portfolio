@@ -1,0 +1,84 @@
+---
+// Dark / light switch. Without a saved choice the page follows the OS
+// setting; a click saves the choice (localStorage, per visitor).
+---
+
+<button class="theme-toggle" type="button" role="switch" aria-checked="true" aria-label="Dark mode">
+  <span class="track" aria-hidden="true">
+    <span class="thumb">
+      <svg class="i-moon" viewBox="0 0 24 24" width="14" height="14"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" fill="currentColor"></path></svg>
+      <svg class="i-sun" viewBox="0 0 24 24" width="14" height="14"><circle cx="12" cy="12" r="4.5" fill="currentColor"></circle><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>
+    </span>
+  </span>
+</button>
+
+<script>
+  const root = document.documentElement;
+  const mql = window.matchMedia('(prefers-color-scheme: light)');
+  const current = () => (root.dataset.theme as 'light' | 'dark' | undefined) ?? (mql.matches ? 'light' : 'dark');
+  const sync = () =>
+    document.querySelectorAll('.theme-toggle').forEach((b) => b.setAttribute('aria-checked', String(current() === 'dark')));
+  document.querySelectorAll<HTMLButtonElement>('.theme-toggle').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      const next = current() === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch {}
+      sync();
+    }),
+  );
+  mql.addEventListener('change', sync);
+  sync();
+</script>
+
+<style>
+  .theme-toggle {
+    display: inline-grid;
+    place-items: center;
+    min-width: 48px;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .track {
+    position: relative;
+    width: 52px;
+    height: 28px;
+    border-radius: 999px;
+    background: var(--c-ink-display);
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.4);
+  }
+  .thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #f2f2f2;
+    color: var(--c-ink-display);
+    transition: transform 0.3s cubic-bezier(0.3, 0.7, 0.2, 1);
+  }
+  .thumb svg {
+    grid-area: 1 / 1;
+    transition: opacity 0.2s ease;
+  }
+  /* checked = dark: thumb right with moon; unchecked = light: thumb left with sun */
+  .theme-toggle[aria-checked='true'] .thumb {
+    transform: translateX(24px);
+  }
+  .theme-toggle[aria-checked='true'] .i-sun,
+  .theme-toggle[aria-checked='false'] .i-moon {
+    opacity: 0;
+  }
+  .theme-toggle:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--c-hero), 0 0 0 6px #000;
+    border-radius: 999px;
+  }
+</style>

@@ -1,0 +1,539 @@
+---
+// "Selected work" as a bookshelf of 3D cloth-bound books.
+// Hover/focus lifts a book. First click turns it cover-out (one open at a
+// time; 01 starts open), second click jumps to the project. Touch screens
+// get the covers in a horizontal scroller and a single tap navigates.
+// Without JS every book is a plain link to its project.
+import { projects } from '../data/projects';
+
+// Cover title is sized from its longest word so nothing touches the label edges.
+const fit = (t: string) => Math.max(...t.split(/\s+/).map((w) => w.length), 6) * 0.82;
+import FeaturedFan from './FeaturedFan';
+import { posterUrl } from '../lib/media';
+// one portrait cover per project for the fan (stand-ins until the 2x exports arrive)
+const fanPicks: [string, string][] = [
+  ['k2o', '01-k2o-kv'],
+  ['startup-standup', '02-standup-kv'],
+  ['thumbnails-posters', '03-thumbs-poster-ice'],
+  ['visual-content', '04-content-post-luck'],
+  ['infographic', '05-info-bitcoin-timeline'],
+];
+const fanItems = fanPicks.flatMap(([slug, name]) => {
+  const p = projects.find((x) => x.slug === slug);
+  const m = p?.media.find((x) => x.kind === 'image' && x.name === name) as { alt: string } | undefined;
+  const src = posterUrl(name);
+  return p && m && src ? [{ src, alt: m.alt, href: `#${p.slug}` }] : [];
+});
+---
+
+<section class="index container" id="work" aria-labelledby="work-title">
+  <div class="head">
+    <h2 id="work-title" class="section-title display" style="--fit: 10.7">Selected<br />work</h2>
+    <p class="count"><span>{String(projects.length).padStart(2, '0')}</span> projects</p>
+  </div>
+
+  <div class="fan"><FeaturedFan client:visible items={fanItems} /></div>
+  <p id="shelf-hint" class="hint">Click a book to open it, click again to see the project.</p>
+
+  <ol class="shelf" role="list">
+    {
+      projects.map((p, i) => (
+        <li class:list={['book', { 'is-open': i === 0 }]} style={`--book:${p.spine.bg};--ink:${p.spine.ink};--i:${i}`}>
+          <a class="book-link" href={`#${p.slug}`} aria-label={`${p.no} ${p.title}`} aria-describedby="shelf-hint">
+            <span class="book-3d">
+              <span class="spine" aria-hidden="true">
+                <span class="spine-no">{p.no}</span>
+                <span class="spine-title">{p.spine.label}</span>
+                <span class="spine-no spine-balance">{p.no}</span>
+              </span>
+              <span class="cover" aria-hidden="true">
+                <span class="cover-glare" />
+                <span class="label">
+                  <span class="rule" />
+                  <span class="cover-title display" style={`--fit:${fit(p.indexTitle ?? p.title)}`}>
+                    {p.indexTitle ?? p.title}
+                  </span>
+                  <span class="rule" />
+                </span>
+              </span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<script>
+  const shelfMode = window.matchMedia('(hover: hover) and (min-width: 761px)');
+  const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const books = [...document.querySelectorAll<HTMLElement>('.shelf .book')];
+
+  books.forEach((book) => {
+    const link = book.querySelector<HTMLAnchorElement>('.book-link')!;
+
+    // 1st click opens the book, 2nd follows the link to the project
+    link.addEventListener('click', (e) => {
+      if (!shelfMode.matches || book.classList.contains('is-open')) return;
+      e.preventDefault();
+      books.forEach((b) => {
+        b.classList.toggle('is-open', b === book);
+        if (b !== book) reset(b);
+      });
+    });
+  });
+
+  // The open book leans toward the cursor. Tracked on the shelf against the
+  // book's slot (which never transforms), so the tilt can't move the hit area
+  // out from under the pointer and cause a leave/enter flicker.
+  const shelf = document.querySelector<HTMLElement>('.shelf');
+  function reset(b: HTMLElement) {
+    b.classList.remove('is-tilting');
+    const l = b.querySelector<HTMLElement>('.book-link')!;
+    ['--tilt-x', '--tilt-y', '--foil', '--gx', '--gy'].forEach((k) => l.style.removeProperty(k));
+  }
+  let raf = 0;
+  shelf?.addEventListener('pointermove', (e) => {
+    if (!fine.matches || still.matches) return;
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => {
+      const book = books.find((b) => b.classList.contains('is-open'));
+      if (!book) return;
+      const r = book.getBoundingClientRect();
+      const pad = 40; // the lifted cover pokes above its slot
+      const inside = e.clientX > r.left - pad && e.clientX < r.right + pad && e.clientY > r.top - pad * 2 && e.clientY < r.bottom + pad;
+      if (!inside) return reset(book);
+      const x = Math.min(Math.max((e.clientX - r.left) / r.width, 0), 1) - 0.5;
+      const y = Math.min(Math.max((e.clientY - r.top) / r.height, 0), 1) - 0.5;
+      const l = book.querySelector<HTMLElement>('.book-link')!;
+      l.style.setProperty('--tilt-y', `${(x * 22).toFixed(2)}deg`);
+      l.style.setProperty('--tilt-x', `${(-y * 18).toFixed(2)}deg`);
+      l.style.setProperty('--foil', `${((x + 0.5) * 100).toFixed(1)}%`);
+      l.style.setProperty('--gx', `${((x + 0.5) * 100).toFixed(1)}%`);
+      l.style.setProperty('--gy', `${((y + 0.5) * 100).toFixed(1)}%`);
+      book.classList.add('is-tilting');
+    });
+  });
+  shelf?.addEventListener('pointerleave', () => {
+    cancelAnimationFrame(raf);
+    books.forEach(reset);
+  });
+</script>
+
+<style>
+  .index {
+    container-type: inline-size;
+    border-top: 1px solid var(--c-line);
+    --spine-w: 76px;
+    --cover-w: 312px;
+    --book-h: 432px;
+    /* open book footprint at rotateY(24deg): spine shows sin24 of its width,
+       the cover cos24 of its own (a bit less with perspective); --open-m is
+       the clear space on each side so both gaps match */
+    --open-m: 14px;
+    --open-w: calc(var(--spine-w) * 0.41 + var(--cover-w) * 0.89 + var(--open-m) * 2);
+    --turn: 0.77s cubic-bezier(0.45, 0.05, 0.25, 1);
+    --lift: 0.35s cubic-bezier(0.3, 0.7, 0.2, 1);
+    --foil-grad: linear-gradient(
+        110deg,
+        #2a2e37 0%,
+        #eef1f6 14%,
+        #ff8fcf 26%,
+        #2d313b 38%,
+        #8fe3ff 50%,
+        #fff3a6 62%,
+        #30343e 74%,
+        #f4f6fa 88%,
+        #2a2e37 100%
+      );
+    padding-block: var(--section-y);
+  }
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+  .count {
+    color: var(--c-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .count span {
+    color: var(--c-fg);
+  }
+  .fan {
+    margin-block: clamp(8px, 2vw, 24px) 0;
+  }
+  .hint {
+    margin-bottom: clamp(24px, 4vw, 48px);
+    color: var(--c-muted);
+    font-size: var(--fs-0);
+  }
+
+  /* ---------- Shelf (hover-capable screens) ---------- */
+  .shelf {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 12px;
+    margin: 0;
+    padding: 64px 0 0; /* headroom for lifted books */
+    perspective: 2400px;
+    perspective-origin: 50% 20%;
+  }
+  /* the surface the books stand on: a soft floor shadow that fades out at the ends */
+  .shelf::after {
+    content: '';
+    position: absolute;
+    left: 4%;
+    right: 4%;
+    bottom: -10px;
+    height: 20px;
+    background: radial-gradient(50% 50% at 50% 0%, var(--c-shadow-soft), transparent 100%);
+    pointer-events: none;
+  }
+
+  .book {
+    position: relative;
+    flex: none;
+    width: var(--spine-w);
+    height: var(--book-h);
+    transform-style: preserve-3d;
+    transition: width var(--turn);
+  }
+  /* contact shadow: tight under a standing book, spreads as it lifts */
+  .book::after {
+    content: '';
+    position: absolute;
+    left: 2%;
+    right: 2%;
+    bottom: -6px;
+    height: 12px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--c-shadow), transparent);
+    transition:
+      transform var(--lift),
+      opacity var(--lift);
+    pointer-events: none;
+  }
+  .book-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+    outline: none;
+    transform-style: preserve-3d;
+    transform: translateY(0) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+    transition: transform var(--lift);
+  }
+  .book-3d {
+    position: relative;
+    display: block;
+    width: var(--cover-w);
+    height: 100%;
+    transform-style: preserve-3d;
+    transform-origin: left center;
+    /* closed: spine faces the viewer, cover runs back into the shelf */
+    transform: translateX(var(--spine-w)) rotateY(90deg);
+    transition: transform var(--turn);
+  }
+
+  .spine,
+  .cover {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    backface-visibility: hidden;
+    overflow: hidden;
+  }
+
+  /* cloth weave shared by spine and cover */
+  .spine::before,
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(0deg, rgb(0 0 0 / 0.05) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(90deg, rgb(255 255 255 / 0.06) 0 1px, transparent 1px 3px);
+    pointer-events: none;
+  }
+
+  .spine {
+    left: calc(var(--spine-w) * -1);
+    width: var(--spine-w);
+    transform-origin: right center;
+    transform: rotateY(-90deg);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    justify-items: center;
+    align-items: center;
+    padding: 30px 0;
+    background:
+      linear-gradient(90deg, rgb(255 255 255 / 0.25), rgb(255 255 255 / 0) 30%, rgb(0 0 0 / 0) 62%, rgb(0 0 0 / 0.25)),
+      var(--book);
+    color: var(--ink);
+    border-radius: 4px 0 0 4px;
+  }
+  /* raised bands near the head and tail of the spine */
+  .spine::after {
+    content: '';
+    position: absolute;
+    inset: 12px 0;
+    background:
+      linear-gradient(rgb(0 0 0 / 0.22), rgb(0 0 0 / 0.22)) top / 100% 1.5px no-repeat,
+      linear-gradient(rgb(255 255 255 / 0.35), rgb(255 255 255 / 0.35)) 0 4px / 100% 1px no-repeat,
+      linear-gradient(rgb(0 0 0 / 0.22), rgb(0 0 0 / 0.22)) bottom / 100% 1.5px no-repeat,
+      linear-gradient(rgb(255 255 255 / 0.35), rgb(255 255 255 / 0.35)) 0 calc(100% - 4px) / 100% 1px no-repeat;
+    pointer-events: none;
+  }
+  .spine > * {
+    position: relative;
+  }
+  /* spine type: black ink, debossed into the cloth */
+  .spine-no,
+  .spine-title {
+    color: var(--ink);
+    text-shadow:
+      0 1px 0 rgb(255 255 255 / 0.4),
+      0 -1px 0 rgb(0 0 0 / 0.3);
+  }
+  .spine-no {
+    font-family: var(--f-display);
+    font-size: 1.3rem;
+    line-height: 1;
+  }
+  .spine-balance {
+    visibility: hidden; /* twin of the number so the title sits dead centre */
+  }
+  .spine-title {
+    writing-mode: vertical-rl;
+    font-family: var(--f-display);
+    font-size: 1.15rem;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .cover {
+    left: 0;
+    width: var(--cover-w);
+    display: grid;
+    place-items: center;
+    background:
+      /* hinge groove next to the spine */
+      linear-gradient(
+        90deg,
+        rgb(0 0 0 / 0.28) 0,
+        rgb(255 255 255 / 0.2) 3px,
+        rgb(0 0 0 / 0) 10px,
+        rgb(0 0 0 / 0.16) 16px,
+        rgb(255 255 255 / 0.14) 19px,
+        rgb(0 0 0 / 0) 24px
+      ),
+      /* soft light from the top-left */
+      radial-gradient(130% 90% at 15% 0%, rgb(255 255 255 / 0.22), transparent 55%),
+      linear-gradient(0deg, rgb(0 0 0 / 0.12), transparent 25%),
+      var(--book);
+    border-radius: 0 7px 7px 0;
+    opacity: 0;
+    transition: opacity 0.2s ease 0.45s; /* fade after the book has turned back */
+  }
+  .book.is-open .cover {
+    opacity: 1;
+    transition-delay: 0s;
+  }
+  /* glare following the cursor on the open cover */
+  .cover-glare {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.12) 28%, transparent 55%);
+    mix-blend-mode: soft-light;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+  }
+  .book.is-tilting .cover-glare {
+    opacity: 1;
+  }
+  /* debossed frame */
+  .cover::after {
+    content: '';
+    position: absolute;
+    inset: 16px 16px 16px 30px;
+    border: 1.5px solid rgb(0 0 0 / 0.18);
+    border-radius: 4px;
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.3),
+      inset 0 1px 0 rgb(255 255 255 / 0.3);
+    pointer-events: none;
+  }
+
+  /* foil-stamped title, straight on the cloth */
+  .label {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    gap: 16px;
+    width: calc(100% - 76px);
+    margin-left: 14px; /* optical centre, clears the hinge */
+  }
+  .rule {
+    display: block;
+    width: 44%;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #3a3f4a, #f3f5f9, #ff9fd6, #9fe8ff, #f3f5f9, #3a3f4a);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.35);
+  }
+  .cover-title {
+    font-size: min(2.4rem, calc((var(--cover-w) - 96px) / var(--fit)));
+    line-height: 1.04;
+    text-align: center;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    /* holographic chrome foil: dark and light bands so it reads on any cloth */
+    background: var(--foil-grad);
+    background-size: 250% 100%;
+    background-position: var(--foil, 0%) 50%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    /* debossed: light lip below, shadow above */
+    filter: drop-shadow(0 1px 0 rgb(255 255 255 / 0.45)) drop-shadow(0 -1px 0 rgb(0 0 0 / 0.35));
+    animation: foil 6s ease-in-out infinite alternate;
+  }
+  @keyframes foil {
+    to {
+      background-position: 100% 50%;
+    }
+  }
+  .book-link:hover .cover-title {
+    animation-play-state: paused;
+  }
+
+  /* ---- states ---- */
+  /* hover / focus: lift the book (still closed) */
+  .book:hover .book-link,
+  .book-link:focus-visible {
+    transform: translateY(-28px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  }
+  .book:hover::after,
+  .book:focus-within::after {
+    opacity: 0.55;
+    transform: scale(1.25) translateY(10px);
+  }
+  /* open (after a click): turn cover-out at an angle, lifted */
+  .book.is-open {
+    width: var(--open-w);
+  }
+  .book.is-open .book-3d {
+    /* perspective skews the footprint by shelf position; --nudge balances the
+       left/right gaps (measured: ~3.4px per book from the middle) */
+    --nudge: calc((var(--i) - 3) * 3.4px - 2.5px);
+    transform: translateX(calc(var(--open-m) + var(--spine-w) * 0.41 + var(--nudge))) translateY(-26px) rotateY(24deg) rotateX(3deg);
+  }
+  .book.is-open:hover .book-link {
+    transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  }
+  .book.is-tilting .book-link {
+    transition: transform 0.12s linear;
+  }
+  .book.is-open::after {
+    opacity: 0.6;
+    transform: scale(1.15) translateY(8px);
+  }
+  .book-link:focus-visible .cover,
+  .book-link:focus-visible .spine {
+    box-shadow:
+      0 0 0 3px var(--c-bg),
+      0 0 0 6px var(--c-fg);
+  }
+
+  @media (max-width: 1100px) {
+    .index {
+      --spine-w: 66px;
+      --cover-w: 276px;
+      --book-h: 384px;
+    }
+    .spine-title {
+      font-size: 1rem;
+    }
+  }
+
+  /* ---------- Touch / narrow: covers in a horizontal scroller ---------- */
+  @media (hover: none), (max-width: 760px) {
+    .index {
+      --cover-w: min(64vw, 240px);
+    }
+    .hint {
+      display: none;
+    }
+    .shelf {
+      justify-content: flex-start;
+      gap: 14px;
+      padding: 8px 0 28px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      overscroll-behavior-x: contain;
+      perspective: none;
+      scrollbar-width: thin;
+    }
+    .shelf::after,
+    .book::after {
+      display: none;
+    }
+    .book,
+    .book.is-open {
+      width: var(--cover-w);
+      height: auto;
+      aspect-ratio: 13 / 18;
+      scroll-snap-align: start;
+    }
+    .book-link,
+    .book:hover .book-link,
+    .book-link:focus-visible {
+      transform: none;
+    }
+    .book-3d,
+    .book.is-open .book-3d {
+      width: 100%;
+      transform: none;
+    }
+    .spine {
+      display: none;
+    }
+    .cover {
+      width: 100%;
+      border-radius: 6px;
+    }
+    .cover-title {
+      font-size: min(1.6rem, calc((var(--cover-w) - 108px) / var(--fit)));
+    }
+    .cover {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .book,
+    .book::after,
+    .book-link,
+    .book-3d {
+      transition: none;
+    }
+    .cover-title {
+      animation: none;
+    }
+  }
+</style>

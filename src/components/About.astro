@@ -1,0 +1,92 @@
+---
+import HoloCard from './HoloCard.astro';
+import { contact, profile } from '../data/site';
+const [intro, ...rest] = profile.about;
+---
+
+<section class="about" id="about" aria-labelledby="about-title">
+  <div class="about-card">
+    <HoloCard role="Visual Designer" />
+  </div>
+
+  <div class="about-body">
+    <h2 id="about-title" class="section-title display" style="--fit: 6.7">About<br />me</h2>
+    <p class="about-intro">
+      My name is <mark>{profile.fullName}</mark>, but you can call me {profile.nickname}.
+    </p>
+    {rest.map((p) => <p>{p}</p>)}
+
+    <ul class="contact-row" role="list" aria-label="Contact">
+      <li><a href={`mailto:${contact.email}`}>{contact.email}</a></li>
+      <li><a href={contact.linkedin.href} rel="noopener" target="_blank">{contact.linkedin.label}</a></li>
+      <li><a href={contact.behance.href} rel="noopener" target="_blank">{contact.behance.label}</a></li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .about {
+    /* stop the card's sway from causing horizontal scroll, without clipping
+       its shadow at the column edge (clip on one axis keeps y visible) */
+    overflow-x: clip;
+    display: grid;
+    max-width: calc(var(--max-w) + var(--gutter) * 2);
+    margin-inline: auto;
+  }
+  .about-card {
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    padding-bottom: 48px;
+  }
+  .about-body {
+    container-type: inline-size;
+    display: grid;
+    align-content: center;
+    gap: 20px;
+    padding: var(--section-y) var(--gutter);
+    font-size: var(--fs-2);
+    max-width: 68ch;
+  }
+  .about-body h2 {
+    margin-bottom: 12px;
+  }
+  mark {
+    background: #d01818; /* white text needs a darker red than --c-accent for 4.5:1 */
+    color: #fff;
+    font-weight: 700;
+    padding: 0 0.2em;
+    border-radius: 2px;
+  }
+  .contact-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
+    margin-top: 20px;
+    font-size: var(--fs-0);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .contact-row a {
+    display: inline-block;
+    padding-block: 8px;
+    color: var(--c-accent);
+    text-decoration: none;
+    word-break: break-all;
+  }
+  .contact-row a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  @media (min-width: 900px) {
+    .about {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+      align-items: stretch;
+    }
+    .about-body {
+      padding-left: clamp(40px, 5vw, 80px);
+    }
+  }
+</style>

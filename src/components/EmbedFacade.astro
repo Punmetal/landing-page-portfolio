@@ -1,0 +1,80 @@
+---
+// Click-to-load facade for third-party embeds. Nothing is requested from the
+// provider until the visitor presses play (no trackers on page load).
+import { posterUrl } from '../lib/media';
+
+interface Props {
+  provider: 'youtube' | 'vimeo' | 'sketchfab';
+  id: string;
+  label: string;
+  poster?: string;
+}
+const { provider, id, label, poster } = Astro.props;
+const src = {
+  youtube: `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`,
+  vimeo: `https://player.vimeo.com/video/${id}?autoplay=1&dnt=1`,
+  sketchfab: `https://sketchfab.com/models/${id}/embed?autostart=1`,
+}[provider];
+const bg = posterUrl(poster);
+---
+
+<div class="facade" data-embed-src={src} data-embed-title={label}>
+  {bg && <img src={bg} alt="" loading="lazy" decoding="async" />}
+  <button type="button" class="facade-btn">
+    <span aria-hidden="true">▶</span>
+    <span>Load {label}</span>
+    <small>Loads content from {provider}</small>
+  </button>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.facade').forEach((el) => {
+    el.querySelector('button')?.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = el.dataset.embedSrc!;
+      iframe.title = el.dataset.embedTitle!;
+      iframe.allow = 'autoplay; fullscreen; picture-in-picture; xr-spatial-tracking';
+      iframe.allowFullscreen = true;
+      el.replaceChildren(iframe);
+      iframe.focus();
+    });
+  });
+</script>
+
+<style>
+  .facade {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius);
+    background: var(--c-bg-raised);
+    overflow: hidden;
+  }
+  .facade img,
+  .facade :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 0;
+  }
+  .facade-btn {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    padding: 16px 24px;
+    border: 0;
+    border-radius: var(--radius);
+    background: rgb(0 0 0 / 0.75);
+    color: var(--c-fg);
+    font: 700 var(--fs-1) var(--f-body);
+    cursor: pointer;
+  }
+  .facade-btn small {
+    font-weight: 400;
+    color: var(--c-muted);
+  }
+</style>
